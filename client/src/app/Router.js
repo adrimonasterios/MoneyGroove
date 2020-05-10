@@ -1,8 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom'
-import Dashboard from './Dashboard/Dashboard.js'
-import Groceries from './Groceries/Groceries.js'
-import Navbar from './Utils/Navbar.js'
+import Dashboard from '../Dashboard/Dashboard.js'
+import Groceries from '../Groceries/Groceries.js'
+import Navbar from '../Utils/Navbar.js'
 // import './styles/main.css'
 
 const pathComponent = [
@@ -16,22 +16,8 @@ const pathComponent = [
   },
 ]
 
-class App extends React.Component{
-  constructor(){
-    super();
-    this.state = {
-      path: ''
-    }
-    this.changePath = this.changePath.bind(this)
-  }
 
-  changePath(newPath){
-    this.setState({path: newPath}, () => console.log(this.state))
-  }
-
-  render(){
-    const { path } = this.state
-    return(
+const Routes = () => (
       <Router>
         <div style={{display: 'flex'}}>
           <Navbar
@@ -46,7 +32,6 @@ class App extends React.Component{
         </div>
       </Router>
     )
-  }
-}
 
-export default App;
+
+export default Routes;

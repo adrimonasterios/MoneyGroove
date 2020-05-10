@@ -1,102 +1,108 @@
 import React from 'react';
 
+import ItemForm from './components/ItemForm.js'
+
 import { withStyles } from '@material-ui/styles';
-import Input from '@material-ui/core/Input';
-import Select from '@material-ui/core/Select';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import InputAdornment from '@material-ui/core/InputAdornment';
+import TextField from '@material-ui/core/TextField';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import Grid from '@material-ui/core/Grid';
+import DateFnsUtils from '@date-io/date-fns';
+import {
+  MuiPickersUtilsProvider,
+  KeyboardTimePicker,
+  KeyboardDatePicker,
+} from '@material-ui/pickers';
 
 
-const styles = {
+const styles = theme => ({
   groceries: {
     display: 'flex',
-    width: '90%'
+    width: '90%',
+    fontFamily: theme.typography.fontFamily
   },
   newBill: {
-    width: '50%',
+    width: '60%',
     padding: "2% 5%"
   },
-  form: {
+  topForm: {
     display: 'flex',
-    justifyContent: "space-between",
-    width: '100%'
+    justifyContent: "space-between"
   },
-  item: {
-    width: "25%"
+  market: {
+    width: "65%",
+    marginBottom: "2em",
+    "& input": {
+      fontSize: '2em'
+    }
   },
-  brand: {
-    width: "25%"
-  },
-  unit: {
-    width: "15%"
-  },
-  quantity: {
-    width: "15%"
-  },
-  price: {
-    width: "10%"
-  },
-};
+});
 
 class Groceries extends React.Component{
   constructor(){
     super();
     this.state = {
-      measureUnit: '',
-      age: 0
+      items: ['item1', 'item2'],
+      brands: ['brand1', 'brand2'],
+      selectedDate: Date.now(),
+      market: ''
     }
+    this.handleSubmit = this.handleSubmit.bind(this)
+    this.handleDateChange = this.handleDateChange.bind(this)
   }
 
-  handleChange(e, r){
-    console.log(e, r);
+  handleDateChange(e){
+    this.setState({selectedDate: e})
+  }
+
+  handleChange(e, field){
+    this.setState({[field]: e})
+  }
+
+  handleSubmit(e, item){
+    e.preventDefault()
+    console.log(item);
   }
 
   render(){
-    const { measureUnit, age } = this.state
+    const { items, brands, selectedDate } = this.state
     const { classes } = this.props
 
     return(
       <div className={classes.groceries}>
         <div className={classes.newBill}>
-          <form className={classes.form}>
-            <FormControl className={classes.item}>
-              <InputLabel htmlFor="standard-adornment-password">Item</InputLabel>
-              <Input label="Item"/>
-            </FormControl>
-            <FormControl className={classes.brand}>
-              <InputLabel htmlFor="standard-adornment-password">Marca</InputLabel>
-              <Input label="Marca"/>
-            </FormControl>
-            <FormControl className={classes.unit}>
-              <InputLabel htmlFor="unit">Unidad</InputLabel>
-              <Select
-                inputProps={{
-                  name: 'unit',
-                  id: 'unit',
+          <h1>NUEVO MERCADO</h1>
+          <div className={classes.topForm}>
+            <Autocomplete
+              options={brands}
+              freeSolo={true}
+              className={classes.market}
+              renderInput={(params) => <TextField {...params}
+                                          label="Mercado"
+                                          onChange={(e) => this.handleChange(e.target.value, "market")}
+                                          />}
+            />
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <KeyboardDatePicker
+                disableToolbar
+                variant="inline"
+                format="MM/dd/yyyy"
+                margin="normal"
+                id="date-picker-inline"
+                label="Fecha de compra"
+                value={selectedDate}
+                onChange={this.handleDateChange}
+                KeyboardButtonProps={{
+                  'aria-label': 'change date',
                 }}
-                id="unit"
-                value={measureUnit}
-                onChange={(e,r) => this.handleChange(e,r)}
-                >
-                <MenuItem value='gr'>gr</MenuItem>
-                <MenuItem value='ml'>ml</MenuItem>
-                <MenuItem value='u'>u</MenuItem>
-              </Select>
-            </FormControl>
-            <FormControl className={classes.quantity}>
-              <InputLabel htmlFor="standard-adornment-password">Cantidad</InputLabel>
-              <Input label="Cantidad"/>
-            </FormControl>
-            <FormControl className={classes.price}>
-              <InputLabel htmlFor="standard-adornment-password">Precio</InputLabel>
-              <Input
-                label="Precio"
-                startAdornment={<InputAdornment position="start">$</InputAdornment>}
                 />
-            </FormControl>
-          </form>
+            </MuiPickersUtilsProvider>
+          </div>
+
+          <ItemForm
+            handleSubmit={this.handleSubmit}
+            items={items}
+            brands={brands}
+            />
         </div>
       </div>
     )

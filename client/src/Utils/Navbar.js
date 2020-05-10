@@ -23,13 +23,23 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: '1em'
   },
   tabV:{
-    marginBottom: '1em'
+    marginBottom: '1em',
+    color: theme.palette.navbar.links,
+    "&.Mui-selected":{
+      color: theme.palette.navbar.selectedLink
+    }
   },
   tabH: {
     "&.Mui-selected":{
-      backgroundColor: "#F50056",
-      color: "white"
+      backgroundColor: theme.palette.primary.main,
+      color: theme.palette.primary.contrastText
     }
+  },
+  vIndicator: {
+    backgroundColor: theme.palette.primary.main
+  },
+  hIndicator: {
+    backgroundColor: "rgba(0,0,0,0)"
   }
 }));
 
@@ -51,9 +61,7 @@ export default function Navbar(props) {
         variant={props.variant}
         value={value}
         TabIndicatorProps={{
-            style: {
-              backgroundColor: props.layout === 'vertical'? "secondary" : "rgba(0,0,0,0)"
-            }
+            className: props.layout === 'vertical'? classes.vIndicator : classes.hIndicator
           }}
         onChange={handleChange}
         className={props.layout === 'vertical'? classes.tabsV : classes.tabsH}
