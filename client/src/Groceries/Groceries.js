@@ -1,4 +1,6 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import * as groceriesActions from './store/groceriesActions';
 
 import ItemForm from './components/ItemForm.js'
 
@@ -109,4 +111,12 @@ class Groceries extends React.Component{
   }
 }
 
-export default withStyles(styles)(Groceries);
+const mapStateToProps = state => ({
+  groceries: state.groceries,
+})
+
+const mapDispatchToProps = {
+  setItems: groceriesActions.setItems,
+}
+
+export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(Groceries));

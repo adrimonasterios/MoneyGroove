@@ -1,6 +1,8 @@
+require('dotenv').config();
+
 module.exports = {
   keys: {
-    ***REMOVED***
-    secretOrKey: "secret"
+    mongoURI: process.env.MONGODB_URI,
+    secretOrKey: process.env.JWT_SECRET
   }
 }
