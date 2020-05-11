@@ -11,9 +11,6 @@ const validateLogin = require("../middleware/validation/login");
 router.post('/register', function(request, response, next) {
   // Form validation
   const { errors, isValid } = validateRegistration(request.body);
-  console.log('=======================1====================');
-  console.log(errors);
-  console.log(isValid);
   // Check validation
   if (!isValid) {
     return response.status(400).json(errors);

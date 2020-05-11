@@ -1,6 +1,8 @@
+require('dotenv').config();
+
 module.exports = {
   keys: {
-    mongoURI: 'mongodb+srv://adrianmo:moneygroove2020@cluster0-afk1h.mongodb.net/test?retryWrites=true&w=majority',
-    secretOrKey: "secret"
+    mongoURI: process.env.MONGODB_URI,
+    secretOrKey: process.env.JWT_SECRET
   }
 }
