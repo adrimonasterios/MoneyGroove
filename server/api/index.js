@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
+console.log('HERE');
 router.use('/users', require('./users/users.routes.js'));
 
 // 404

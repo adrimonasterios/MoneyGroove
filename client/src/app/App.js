@@ -5,7 +5,7 @@ import { Provider } from 'react-redux'
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import Routes from './Router.js'
 
-import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
+import { ThemeProvider as MuiThemeProvider } from '@material-ui/core/styles';
 import moneyGrooveTheme from './theme.config';
 
 import * as groceriesStore from '../Groceries/store/groceriesReducer'

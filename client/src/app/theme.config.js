@@ -13,47 +13,33 @@ const moneyGrooveTheme = createMuiTheme(
       },
       "palette":{
         "primary":{
-             "light":"rgba(245, 0, 87, 0.5)",
-             "main":"rgba(245, 0, 87, 1)",
-             "dark":"rgba(140, 0, 50, 1)",
+             "light":"rgba(59, 41, 152, 0.5)",
+             "main":"rgba(59, 41, 152, 1)",
+             "dark":"rgba(43, 30, 113, 1)",
              "contrastText":"#fff"
           },
         "secondary":{
-             "light":"rgba(17, 157, 164, 0.5)",
-             "main":"rgba(17, 157, 164, 1)",
-             "dark":"rgba(5, 61, 71, 1)",
+             "light":"rgba(139, 62, 223, 0.5)",
+             "main":"rgba(139, 62, 223, 1)",
+             "dark":"rgba(101, 42, 164, 1)",
              "contrastText":"#fff"
           },
           "navbar": {
             "links": "rgba(40, 40, 40, 0.6)",
             "selectedLink": "rgba(40, 40, 40, 0.8)",
-          }
-         // "common":{
-         //    "black":"#000",
-         //    "white":"#fff"
-         // },
-         // "background":{
-         //    "paper":"#fff",
-         //    "default":"#fafafa"
-         // },
-         // "secondary":{
-         //    "light":"rgba(235, 0, 40, 1)",
-         //    "main":"rgba(234, 0, 41, 1)",
-         //    "dark":"rgba(201, 0, 34, 1)",
-         //    "contrastText":"#fff"
-         // },
+          },
          // "error":{
          //    "light":"rgba(129, 255, 220, 1)",
          //    "main":"rgba(0, 255, 185, 1)",
          //    "dark":"rgba(0, 201, 146, 1)",
          //    "contrastText":"rgba(0, 0, 0, 1)"
          // },
-         // "text":{
-         //    "primary":"rgba(0, 0, 0, 0.87)",
-         //    "secondary":"rgba(0, 0, 0, 0.54)",
-         //    "disabled":"rgba(0, 0, 0, 0.38)",
-         //    "hint":"rgba(0, 0, 0, 0.38)"
-         // }
+         "text":{
+            "primary":"rgba(0, 0, 0, 0.87)",
+            "secondary":"rgba(0, 0, 0, 0.54)",
+            "disabled":"rgba(0, 0, 0, 0.38)",
+            "hint":"rgba(0, 0, 0, 0.38)"
+         }
       },
       customs: {
           // My business variables

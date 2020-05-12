@@ -6,6 +6,7 @@ const User = require("./User");
 
 class UsersController {
   async create(req, res, next) {
+    console.log(req.body);
     try {
       const data = req.body
       User.findOne({ email: data.email }).then(user => {
