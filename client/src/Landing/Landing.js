@@ -1,7 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
+import { withRouter } from "react-router-dom";
 import * as landingActions from './store/landingActions';
+import * as authActions from '../app/auth/store/authActions';
 
 import LoginForm from './components/LoginForm'
 import RegisterForm from './components/RegisterForm'
@@ -55,7 +57,8 @@ class Landing extends React.Component{
   constructor(){
     super();
     this.state = {
-      registration: false
+      registration: false,
+      errors: {}
     }
     this.handleSubmit = this.handleSubmit.bind(this)
     this.register = this.register.bind(this)
@@ -71,16 +74,16 @@ class Landing extends React.Component{
 
   async handleSubmit(e, state){
     e.preventDefault()
-    if('name' in state){
-      await axios.post('/api/users/register', state).then(res => console.log(res))
-    }else{
-      await axios.post('/api/users/login', state).then(res => console.log(res))
-    }
+    const { history } = this.props
+    'name' in state?
+      await this.props.registerUser(state, history) :
+      await this.props.loginUser(state, history)
   }
 
   render(){
     const { registration } = this.state
-    const { classes } = this.props
+    const { classes, auth } = this.props
+    // if(localStorage.jwtToken) this.props.history.push('/dashboard')
 
     return(
       <div className={classes.landing}>
@@ -111,10 +114,12 @@ class Landing extends React.Component{
 
 const mapStateToProps = state => ({
   landing: state.landing,
+  auth: state.auth
 })
 
 const mapDispatchToProps = {
-  // setItems: landingActions.setItems,
+  registerUser: authActions.registerUser,
+  loginUser: authActions.loginUser,
 }
 
-export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(Landing));
+export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(withRouter(Landing)));

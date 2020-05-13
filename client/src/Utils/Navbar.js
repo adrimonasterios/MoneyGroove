@@ -55,10 +55,10 @@ export default function Navbar(props) {
   };
 
   return (
-    <div className={props.layout === 'vertical'? classes.rootV : classes.rootH}>
+    <div className={'layout' in props && props.layout === 'horizontal'? classes.rootH : classes.rootV}>
       <Tabs
-        orientation={props.layout}
-        variant={props.variant}
+        orientation={props.layout || 'vertical'}
+        variant={props.variant || 'scrollable'}
         value={value}
         TabIndicatorProps={{
             className: props.layout === 'vertical'? classes.vIndicator : classes.hIndicator

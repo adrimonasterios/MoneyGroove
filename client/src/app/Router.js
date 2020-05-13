@@ -1,57 +1,78 @@
 import React from 'react';
-import { BrowserRouter as Router, Route } from 'react-router-dom'
-import { makeStyles } from '@material-ui/core/styles';
+import { connect } from 'react-redux';
+import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom'
+import jwt_decode from "jwt-decode";
+import { withStyles } from '@material-ui/styles';
+
+import * as authActions from './auth/store/authActions';
 
 import Landing from '../Landing/Landing.js'
 import Dashboard from '../Dashboard/Dashboard.js'
 import Groceries from '../Groceries/Groceries.js'
 import Navbar from '../Utils/Navbar.js'
+import Logout from '../Utils/Logout.js'
+import PrivateRoute from './auth/store/helpers/PrivateRoute.js'
 // import './styles/main.css'
 
-const pathComponent = [
-  {
-    path: '/',
-    component: Landing
-  },
-  {
-    path: '/dashboard',
-    component: Dashboard
-  },
-  {
-    path: '/mercado',
-    component: Groceries
-  },
-]
 
-const useStyles = makeStyles((theme) => ({
+const styles = theme => ({
   rootContainer: {
     display: 'flex',
     width: "100%",
     height: "100%",
     fontFamily: theme.typography.fontFamily
   }
-}));
+});
 
 
-const Routes = (props) => {
-  const classes = useStyles();
+class Routes extends React.Component{
+  async componentDidMount(){
+  }
+
+
+  render(){
+    const { classes, auth } = this.props
+
     return(
       <Router>
         <div className={classes.rootContainer}>
-          {window.location.pathname !== '/' &&
-            <Navbar
-              layout="vertical"
-              variant="scrollable"
-              links={['home', 'mercado']}
-              tabs={['Home', 'Mercado']}
-            />}
-          {pathComponent.map((p,i) =>
-            <Route exact path={`${p.path}`} component={p.component} key={`key_${i}`}/>
-          )}
+          <Redirect from="/" to="/home"/>
+          {auth.isAuthenticated?
+            <Route path="/" render={() => <Navbar
+                                            layout="vertical"
+                                            variant="scrollable"
+                                            links={['dashboard', 'mercado', 'logout']}
+                                            tabs={['Panel', 'Mercado', 'Cerrar Sesion']}
+                                            />}/>
+                                          : ''}
+          <PrivateRoute
+            exact
+            path="/dashboard"
+            component={Dashboard}
+
+            />
+          <PrivateRoute
+            exact
+            path="/mercado"
+            component={Groceries}
+
+            />
+          <Route exact path="/home" component={Landing}/>
+          <Route exact path="/logout" render={() => <Logout logoutUser={this.props.logoutUser}/>}/>
         </div>
       </Router>
     )
   }
+}
 
 
-export default Routes;
+  const mapStateToProps = state => ({
+    auth: state.auth,
+  })
+
+  const mapDispatchToProps = {
+    logoutUser: authActions.logoutUser,
+    authenticateUser: authActions.authenticateUser
+  }
+
+  export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(Routes))
