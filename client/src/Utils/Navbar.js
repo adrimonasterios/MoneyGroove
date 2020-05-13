@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Navbar(props) {
   const classes = useStyles();
   const history = useHistory()
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = React.useState(props.currentPath || 0);
 
   const handleChange = (event, newValue) => {
     if('links' in props) history.push(`/${props.links[newValue]}`)

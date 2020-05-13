@@ -12,7 +12,7 @@ import Groceries from '../Groceries/Groceries.js'
 import Navbar from '../Utils/Navbar.js'
 import Logout from '../Utils/Logout.js'
 import PrivateRoute from './auth/store/helpers/PrivateRoute.js'
-// import './styles/main.css'
+
 
 
 const styles = theme => ({
@@ -24,39 +24,57 @@ const styles = theme => ({
   }
 });
 
+const navbarPaths = [
+  {
+    link: 'dashboard',
+    tab: 'Dashboard'
+  },
+  {
+    link: 'mercado',
+    tab: 'Mercado'
+  },
+  {
+    link: 'logout',
+    tab: 'Cerrar Sesion'
+  },
+]
+
 
 class Routes extends React.Component{
-  async componentDidMount(){
-  }
-
 
   render(){
     const { classes, auth } = this.props
+    const navbarLinks = navbarPaths.map(n => n.link)
+    const navbarTabs = navbarPaths.map(n => n.tab)
+    let currentPath = window.location.pathname.split('')
+    currentPath.splice(0,1)
+    currentPath = currentPath.join('')
+    console.log(currentPath);
+    let currentPathIndex = navbarLinks.indexOf(currentPath)
 
     return(
       <Router>
         <div className={classes.rootContainer}>
-          <Redirect from="/" to="/home"/>
           {auth.isAuthenticated?
             <Route path="/" render={() => <Navbar
                                             layout="vertical"
                                             variant="scrollable"
-                                            links={['dashboard', 'mercado', 'logout']}
-                                            tabs={['Panel', 'Mercado', 'Cerrar Sesion']}
+                                            links={navbarLinks}
+                                            tabs={navbarTabs}
+                                            currentPath={currentPathIndex}
                                             />}/>
                                           : ''}
           <PrivateRoute
             exact
             path="/dashboard"
             component={Dashboard}
-
             />
           <PrivateRoute
             exact
             path="/mercado"
             component={Groceries}
-
             />
+          <Redirect exact from="/" to="/home"/>
           <Route exact path="/home" component={Landing}/>
           <Route exact path="/logout" render={() => <Logout logoutUser={this.props.logoutUser}/>}/>
         </div>

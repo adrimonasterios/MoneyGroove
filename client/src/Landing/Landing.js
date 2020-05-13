@@ -64,6 +64,14 @@ class Landing extends React.Component{
     this.register = this.register.bind(this)
   }
 
+  componentDidMount(){
+    const token = localStorage.getItem('jwtToken')
+    const routerState = this.props.location.state
+    const previousPath = (routerState && 'from' in routerState) && routerState.from
+    const authenticatedRoute = previousPath? previousPath : '/dashboard'
+    token && this.props.authenticateUser(token).then(res => this.props.history.push(authenticatedRoute))
+  }
+
   handleChange(e, field){
     this.setState({[field]: e})
   }
@@ -120,6 +128,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
   registerUser: authActions.registerUser,
   loginUser: authActions.loginUser,
+  authenticateUser: authActions.authenticateUser
 }
 
 export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(withRouter(Landing)));

@@ -53,14 +53,14 @@ export const authenticateUser = (token) => dispatch => {
     const decoded = jwt_decode(token);
     dispatch(setCurrentUser(decoded))
 
-  // Check for expired token
-    const currentTime = Date.now() / 1000; // to get in milliseconds
-    if (decoded.exp < currentTime) {
-      dispatch(logoutUser())
-      window.location.href = "./home";
-    }
+  // // Check for expired token
+  //   const currentTime = Date.now() / 1000; // to get in milliseconds
+  //   if (decoded.exp < currentTime) {
+  //     dispatch(logoutUser())
+  //     window.location.href = "./home";
+  //   }
   }
-  dispatch(loading(false))
+  return Promise.resolve();
 };
 
 // Set logged in user
