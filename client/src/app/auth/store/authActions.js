@@ -53,12 +53,12 @@ export const authenticateUser = (token) => dispatch => {
     const decoded = jwt_decode(token);
     dispatch(setCurrentUser(decoded))
 
-  // // Check for expired token
-  //   const currentTime = Date.now() / 1000; // to get in milliseconds
-  //   if (decoded.exp < currentTime) {
-  //     dispatch(logoutUser())
-  //     window.location.href = "./home";
-  //   }
+  // Check for expired token
+    const currentTime = Date.now() / 1000; // to get in milliseconds
+    if (decoded.exp < currentTime) {
+      dispatch(logoutUser())
+      window.location.href = "./home";
+    }
   }
   return Promise.resolve();
 };
@@ -90,6 +90,7 @@ export const loading = (boolean) => {
 export const logoutUser = () => dispatch => {
   // Remove token from local storage
   localStorage.removeItem("jwtToken");
+  localStorage.removeItem("navbarPath");
   // Remove auth header for future requests
   setAuthToken(false);
   // Set current user to empty object {} which will set isAuthenticated to false

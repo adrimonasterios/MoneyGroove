@@ -46,11 +46,12 @@ class Routes extends React.Component{
     const { classes, auth } = this.props
     const navbarLinks = navbarPaths.map(n => n.link)
     const navbarTabs = navbarPaths.map(n => n.tab)
-    let currentPath = window.location.pathname.split('')
+    let currentPath = localStorage.getItem('navbarPath').split('')
     currentPath.splice(0,1)
     currentPath = currentPath.join('')
-    console.log(currentPath);
     let currentPathIndex = navbarLinks.indexOf(currentPath)
+
+
 
     return(
       <Router>
@@ -74,7 +75,7 @@ class Routes extends React.Component{
             path="/mercado"
             component={Groceries}
             />
-          <Redirect exact from="/" to="/home"/>
+
           <Route exact path="/home" component={Landing}/>
           <Route exact path="/logout" render={() => <Logout logoutUser={this.props.logoutUser}/>}/>
         </div>
