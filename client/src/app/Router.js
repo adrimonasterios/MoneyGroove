@@ -46,10 +46,14 @@ class Routes extends React.Component{
     const { classes, auth } = this.props
     const navbarLinks = navbarPaths.map(n => n.link)
     const navbarTabs = navbarPaths.map(n => n.tab)
-    let currentPath = localStorage.getItem('navbarPath').split('')
-    currentPath.splice(0,1)
-    currentPath = currentPath.join('')
-    let currentPathIndex = navbarLinks.indexOf(currentPath)
+    let currentPathIndex = 0
+    if(localStorage.getItem('navbarPath')){
+      let currentPath = localStorage.getItem('navbarPath').split('')
+      currentPath.splice(0,1)
+      currentPath = currentPath.join('')
+      currentPathIndex = navbarLinks.indexOf(currentPath)
+      if(currentPathIndex < 0) currentPathIndex = 0
+    }
 
 
 

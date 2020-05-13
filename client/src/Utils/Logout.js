@@ -1,15 +1,27 @@
-import React from 'react'
-import { useHistory } from 'react-router-dom'
+import { Component } from 'react'
+import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
+import * as authActions from '../app/auth/store/authActions';
 
+class Logout extends Component {
 
-export default function Logout(props) {
-  const history = useHistory()
+  componentDidMount() {
+    const { history } = this.props
+    this.props.logoutUser()
+    history.push('/home')
+  }
 
-  props.logoutUser()
-  history.push('/home')
-
-  return (
-    <div>
-    </div>
-  )
+  render() {
+    return null
+  }
 }
+
+const mapStateToProps = state => ({
+  auth: state.auth
+})
+
+const mapDispatchToProps = {
+  logoutUser: authActions.logoutUser,
+}
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Logout))

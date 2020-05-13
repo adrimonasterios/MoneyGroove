@@ -84,6 +84,7 @@ function ItemForm (props) {
         <Select
           labelId="unit"
           value={state.measureUnit}
+          label="Unidad"
           onChange={(e) => handleChange(e.target.value, "unit")}
           >
             <MenuItem value='gr'>gr</MenuItem>
@@ -108,7 +109,6 @@ function ItemForm (props) {
         onChange={(e) => handleChange(e.target.value, "amount")}
         startAdornment={<InputAdornment position="start">Bs.</InputAdornment>}
         labelWidth={60}
-        color="black"
         />
       </FormControl>
       <Button variant="contained" className={classes.submit} type="submit">
