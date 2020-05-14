@@ -60,6 +60,7 @@ class Routes extends React.Component{
     return(
       <Router>
         <div className={classes.rootContainer}>
+          <Redirect exact from="/" to="/home"/>
           {auth.isAuthenticated?
             <Route path="/" render={() => <Navbar
                                             layout="vertical"

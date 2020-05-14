@@ -69,11 +69,11 @@ class Landing extends React.Component{
     const token = localStorage.getItem('jwtToken')
     const routerState = this.props.location.state
     const previousPath = (routerState && 'from' in routerState) && routerState.from
-    const authenticatedRoute = previousPath? previousPath : '/dashboard'
-    localStorage.setItem('navbarPath', authenticatedRoute.pathname)
+    const authenticatedRoute = previousPath? previousPath.pathname : '/dashboard'
+    localStorage.setItem('navbarPath', authenticatedRoute)
 
     token && this.props.authenticateUser(token).then(res =>{
-      this.props.history.push(authenticatedRoute.pathname)
+      this.props.history.push(authenticatedRoute)
     } )
   }
 
