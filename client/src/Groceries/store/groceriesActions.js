@@ -1,28 +1,51 @@
 import axios from 'axios'
+import * as authActions from '../../app/auth/store/authActions';
 
 export const actionTypes = {
-  SET_ITEMS: 'SET_ITEMS'
+  ADD_PRODUCT: 'ADD_PRODUCT'
 };
 
 
-export function setItems(payload) {
-  return {
-    type: actionTypes.SET_ITEMS,
-    payload
-   }
-}
-//
-// export function setSuppliers() {
-//   return async dispatch => {
-//     try{
-//       let {data} = await axios.get('/api/suppliers/get')
-//       data = data.sort((a,b)=>a.category.localeCompare(b.category))
-//       dispatch({
-//         type: actionTypes.SET_SUPPLIERS,
-//         payload: data
-//       });
-//     }catch(err){
-//       dispatch(setSuppliersError(JSON.parse(JSON.stringify(err)).response.data.msg));
-//     }
-//   }
+// export function setItems(payload) {
+//   return {
+//     type: actionTypes.SET_ITEMS,
+//     payload
+//    }
 // }
+
+export function addProduct(data) {
+  return async dispatch => {
+    try{
+      let product = {
+        name: data.item,
+        brand: data.brand,
+        unit: data.unit
+      }
+      let token  = localStorage.getItem('jwtToken')
+      dispatch(authActions.authenticateUser(token)).then(async res => {
+        console.log(axios.defaults.headers.common["Authorization"]);
+        await axios.post('/api/products/create', product).then(res => {
+          dispatch({
+            type: actionTypes.ADD_PRODUCT,
+            payload: data
+          });
+        })
+      })
+    }catch(err){
+      // dispatch(setSuppliersError(JSON.parse(JSON.stringify(err)).response.data.msg));
+      console.log(err);
+    }
+  }
+}
+
+export function getProducts() {
+  return async dispatch => {
+    try{
+      let products = await axios.get('/api/products')
+      return products.data
+    }catch(err){
+      // dispatch(setSuppliersError(JSON.parse(JSON.stringify(err)).response.data.msg));
+      console.log(err);
+    }
+  }
+}

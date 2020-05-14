@@ -51,6 +51,7 @@ export const authenticateUser = (token) => dispatch => {
   // Check for token to keep user logged in
   if (token) {
     const decoded = jwt_decode(token);
+    setAuthToken(token);
     dispatch(setCurrentUser(decoded))
 
   // Check for expired token

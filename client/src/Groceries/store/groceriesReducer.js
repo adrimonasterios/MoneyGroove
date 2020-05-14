@@ -19,7 +19,8 @@ export function groceriesReducer(state = initialState, action) {
     //     ...state,
     //     selectedCategories: editCategories
     //   }
-    case actionTypes.SET_ITEMS:
+    case actionTypes.ADD_PRODUCT:
+      state.items.push(action.payload)
       return {
         ...state,
       }

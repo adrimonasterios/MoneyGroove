@@ -20,8 +20,8 @@ mongoose.connect(db)
         .catch(err => console.log(err.message))
 
 // Passport middleware
-app.use(passport.initialize());
 require("./server/api/middleware/passport")(passport);
+app.use(passport.initialize());
 
 app.use('/api', require('./server/api'));
 

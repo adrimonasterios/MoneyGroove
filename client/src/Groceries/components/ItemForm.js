@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 import { makeStyles } from '@material-ui/core/styles';
 import Input from '@material-ui/core/Input';
@@ -112,7 +114,7 @@ function ItemForm (props) {
         />
       </FormControl>
       <Button variant="contained" className={classes.submit} type="submit">
-        Ingresar
+        <FontAwesomeIcon icon={faPlus} color="white" size="2x"/>
       </Button>
     </form>
 

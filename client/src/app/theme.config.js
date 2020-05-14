@@ -24,6 +24,8 @@ const moneyGrooveTheme = createMuiTheme(
              "dark":"rgba(101, 42, 164, 1)",
              "contrastText":"#fff"
           },
+          "background": "#F7F7F7",
+          "callToAction": "#ADC825",
           "navbar": {
             "links": "rgba(40, 40, 40, 0.6)",
             "selectedLink": "rgba(40, 40, 40, 0.8)",

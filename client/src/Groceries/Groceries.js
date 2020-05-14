@@ -7,7 +7,7 @@ import ItemForm from './components/ItemForm.js'
 import { withStyles } from '@material-ui/styles';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/Button';
 import DateFnsUtils from '@date-io/date-fns';
 import {
   MuiPickersUtilsProvider,
@@ -20,11 +20,22 @@ const styles = theme => ({
   groceries: {
     display: 'flex',
     width: '90%',
-    fontFamily: theme.typography.fontFamily
+    fontFamily: theme.typography.fontFamily,
+    padding: "2% 5%"
+  },
+  bills: {
+    width: '40%',
+    padding: "2% 5%"
   },
   newBill: {
     width: '60%',
     padding: "2% 5%"
+  },
+  title: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: "2em"
   },
   topForm: {
     display: 'flex',
@@ -37,19 +48,31 @@ const styles = theme => ({
       fontSize: '2em'
     }
   },
+  save: {
+    backgroundColor: theme.palette.callToAction,
+    color: theme.palette.secondary.contrastText,
+    height: '3em'
+  }
 });
 
 class Groceries extends React.Component{
   constructor(){
     super();
     this.state = {
-      items: ['item1', 'item2'],
+      savedItems: [],
       brands: ['brand1', 'brand2'],
       selectedDate: Date.now(),
       market: ''
     }
     this.handleSubmit = this.handleSubmit.bind(this)
     this.handleDateChange = this.handleDateChange.bind(this)
+  }
+
+  async componentDidMount(){
+    this.props.getProducts().then(res => {
+      let products = res.map(p => p.name)
+      this.setState({savedItems: products})
+    })
   }
 
   handleDateChange(e){
@@ -63,16 +86,26 @@ class Groceries extends React.Component{
   handleSubmit(e, item){
     e.preventDefault()
     console.log(item);
+    this.props.addProduct(item)
   }
 
   render(){
-    const { items, brands, selectedDate } = this.state
-    const { classes } = this.props
+    const { savedItems, brands, selectedDate } = this.state
+    const { classes, groceries } = this.props
 
     return(
       <div className={classes.groceries}>
+        <div className={classes.bills}>
+          <h2 style={{fontWeight: 200, margin:0}}>COMPRAS ANTERIORES</h2>
+
+        </div>
         <div className={classes.newBill}>
-          <h1>NUEVO MERCADO</h1>
+          <div className={classes.title}>
+            <h2 style={{fontWeight: 200, margin:0}}>NUEVO MERCADO</h2>
+            <Button variant="contained" className={classes.save}>
+              Guardar Compra
+            </Button>
+          </div>
           <div className={classes.topForm}>
             <Autocomplete
               options={brands}
@@ -102,9 +135,12 @@ class Groceries extends React.Component{
 
           <ItemForm
             handleSubmit={this.handleSubmit}
-            items={items}
+            items={savedItems}
             brands={brands}
             />
+          {groceries.items.map((item, i) =>
+            <p>{item.item}</p>
+          )}
         </div>
       </div>
     )
@@ -116,7 +152,8 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = {
-  setItems: groceriesActions.setItems,
+  addProduct: groceriesActions.addProduct,
+  getProducts: groceriesActions.getProducts,
 }
 
 export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(Groceries));

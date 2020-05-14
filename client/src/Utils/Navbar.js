@@ -17,6 +17,7 @@ const useStyles = makeStyles((theme) => ({
   },
   tabsV: {
     borderRight: `1px solid ${theme.palette.divider}`,
+
   },
   tabsH: {
     borderBottom: `1px solid ${theme.palette.divider}`,
@@ -27,6 +28,9 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.navbar.links,
     "&.Mui-selected":{
       color: theme.palette.navbar.selectedLink
+    },
+    "& span": {
+      alignItems: 'flex-start'
     }
   },
   tabH: {
