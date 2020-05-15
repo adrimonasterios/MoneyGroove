@@ -7,7 +7,8 @@ import { useHistory } from 'react-router-dom'
 
 const useStyles = makeStyles((theme) => ({
   rootV: {
-    backgroundColor: theme.palette.background.paper,
+    backgroundColor: theme.palette.primary.main,
+    // backgroundColor: theme.palette.background.paper,
     display: 'flex',
     height: '100vh',
   },
@@ -25,9 +26,10 @@ const useStyles = makeStyles((theme) => ({
   },
   tabV:{
     marginBottom: '1em',
+    paddingLeft: '1.5em',
     color: theme.palette.navbar.links,
     "&.Mui-selected":{
-      color: theme.palette.navbar.selectedLink
+      backgroundColor: "rgba(255,255,255,0.17)"
     },
     "& span": {
       alignItems: 'flex-start'

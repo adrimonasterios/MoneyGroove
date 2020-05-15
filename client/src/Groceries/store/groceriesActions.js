@@ -16,10 +16,11 @@ export const actionTypes = {
 export function addProduct(data) {
   return async dispatch => {
     try{
+      console.log(data);
       let product = {
         name: data.item,
         brand: data.brand,
-        unit: data.unit
+        detail: data.detail
       }
       let token  = localStorage.getItem('jwtToken')
       dispatch(authActions.authenticateUser(token)).then(async res => {
@@ -29,7 +30,7 @@ export function addProduct(data) {
             type: actionTypes.ADD_PRODUCT,
             payload: data
           });
-        })
+          })
       })
     }catch(err){
       // dispatch(setSuppliersError(JSON.parse(JSON.stringify(err)).response.data.msg));

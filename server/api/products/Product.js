@@ -14,7 +14,7 @@ const ProductSchema = new Schema({
   //   type: Schema.ObjectId,
   //   ref: 'Brands'
   // },
-  unit: {
+  detail: {
     type: String,
     required: true
   },

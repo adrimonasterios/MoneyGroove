@@ -19,26 +19,43 @@ const useStyles = makeStyles((theme) => ({
   form: {
     display: 'flex',
     justifyContent: "space-between",
-    width: '100%'
+    width: '100%',
+    "& option": {
+      background: 'white'
+    }
   },
   item: {
-    width: "25%"
+    width: "25%",
   },
   brand: {
-    width: "18%"
-  },
-  unit: {
-    width: "13%"
+    width: "18%",
+    "&.MuiAutocomplete-option": {
+        background: 'white'
+      }
   },
   quantity: {
     width: "12%"
   },
-  amount: {
-    width: "15%"
+  detail: {
+    width: "16%"
+  },
+  price: {
+    width: "14%"
   },
   submit: {
     backgroundColor: theme.palette.secondary.main,
-    color: theme.palette.secondary.contrastText
+    color: theme.palette.secondary.contrastText,
+    margin: '5px 0',
+    "&:hover": {
+      backgroundColor: theme.palette.secondary.intense,
+    }
+  },
+  // option: {
+  //   backgroundColor: 'white'
+  //
+  // },
+  paper: {
+    backgroundColor: 'white'
   }
 }));
 
@@ -50,12 +67,14 @@ function ItemForm (props) {
   const [state, setState] = useState({
     item: '',
     brand: '',
-    unit: '',
+    detail: '',
     quantity: '',
-    amount: ''
+    price: ''
   });
 
   const handleChange = (value, field) => {
+    console.log('changed');
+    console.log(value);
     setState({ ...state, [field]: value });
   };
 
@@ -64,6 +83,11 @@ function ItemForm (props) {
       <Autocomplete
         options={items}
         freeSolo={true}
+        classes={{
+            paper: classes.paper,
+            option: classes.option,
+          }}
+        onChange={(e) => handleChange(items[e.target.value], "item")}
         className={classes.item}
         renderInput={(params) => <TextField {...params}
                                     label="Item"
@@ -72,49 +96,49 @@ function ItemForm (props) {
                                   />}
       />
       <Autocomplete
-      options={brands}
-      freeSolo={true}
-      className={classes.brand}
-      renderInput={(params) => <TextField {...params}
-                                  label="Marca"
-                                  variant="outlined"
-                                  onChange={(e) => handleChange(e.target.value, "brand")}
-                                  />}
+        options={brands}
+        freeSolo={true}
+        classes={{
+            paper: classes.paper,
+          }}
+        className={classes.brand}
+        onChange={(e) => handleChange(brands[e.target.value], "brand")}
+        renderInput={(params) => <TextField {...params}
+                                    label="Marca"
+                                    variant="outlined"
+                                    onChange={(e) => handleChange(e.target.value, "brand")}
+                                    />}
       />
-      <FormControl variant="outlined" className={classes.unit}>
-        <InputLabel id="unit">Unidad</InputLabel>
-        <Select
-          labelId="unit"
-          value={state.measureUnit}
-          label="Unidad"
-          onChange={(e) => handleChange(e.target.value, "unit")}
-          >
-            <MenuItem value='gr'>gr</MenuItem>
-            <MenuItem value='ml'>ml</MenuItem>
-            <MenuItem value='u'>u</MenuItem>
-        </Select>
-      </FormControl>
-      <FormControl fullWidth className={classes.quantity} variant="outlined">
-        <InputLabel htmlFor="quantity">Cantidad</InputLabel>
-        <OutlinedInput
+    <FormControl fullWidth className={classes.quantity} variant="outlined">
+      <InputLabel htmlFor="quantity">Cantidad</InputLabel>
+      <OutlinedInput
         id="quantity"
         value={state.quantity}
         onChange={(e) => handleChange(e.target.value, "quantity")}
         labelWidth={60}
         />
       </FormControl>
-      <FormControl fullWidth className={classes.amount} variant="outlined">
-        <InputLabel htmlFor="amount">Amount</InputLabel>
+      <FormControl fullWidth className={classes.detail} variant="outlined">
+        <InputLabel htmlFor="detail">Detalle</InputLabel>
         <OutlinedInput
-        id="amount"
-        value={state.amount}
-        onChange={(e) => handleChange(e.target.value, "amount")}
+          id="detail"
+          value={state.detail}
+          onChange={(e) => handleChange(e.target.value, "detail")}
+          labelWidth={60}
+          />
+      </FormControl>
+      <FormControl fullWidth className={classes.price} variant="outlined">
+        <InputLabel htmlFor="price">Precio</InputLabel>
+        <OutlinedInput
+        id="price"
+        value={state.price}
+        onChange={(e) => handleChange(e.target.value, "price")}
         startAdornment={<InputAdornment position="start">Bs.</InputAdornment>}
         labelWidth={60}
         />
       </FormControl>
-      <Button variant="contained" className={classes.submit} type="submit">
-        <FontAwesomeIcon icon={faPlus} color="white" size="2x"/>
+      <Button variant="contained" size="small" className={classes.submit} type="submit">
+        Insertar
       </Button>
     </form>
 
@@ -122,3 +146,6 @@ function ItemForm (props) {
 }
 
 export default ItemForm
+
+
+// <FontAwesomeIcon icon={faPlus} color="white" size="2x"/>

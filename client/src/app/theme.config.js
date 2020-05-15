@@ -22,13 +22,21 @@ const moneyGrooveTheme = createMuiTheme(
              "light":"rgba(139, 62, 223, 0.5)",
              "main":"rgba(139, 62, 223, 1)",
              "dark":"rgba(101, 42, 164, 1)",
+             "intense":"rgba(165, 83, 255, 1)",
              "contrastText":"#fff"
           },
           "background": "#F7F7F7",
-          "callToAction": "#ADC825",
+          "callToAction": {
+            "main": "rgba(173, 200, 37, 1)",
+            "light": "rgba(173, 200, 37, 0.7)",
+            "dark": "rgba(161, 186, 34, 1)",
+            "intense": "rgba(183, 213, 29, 1)",
+          },
           "navbar": {
-            "links": "rgba(40, 40, 40, 0.6)",
+            "links": "#fff",
             "selectedLink": "rgba(40, 40, 40, 0.8)",
+            // "links": "rgba(40, 40, 40, 0.6)",
+            // "selectedLink": "rgba(40, 40, 40, 0.8)",
           },
          // "error":{
          //    "light":"rgba(129, 255, 220, 1)",
