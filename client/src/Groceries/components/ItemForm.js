@@ -1,12 +1,9 @@
 import React, { useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+// import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 import { makeStyles } from '@material-ui/core/styles';
-import Input from '@material-ui/core/Input';
-import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Autocomplete from '@material-ui/lab/Autocomplete';
@@ -25,22 +22,25 @@ const useStyles = makeStyles((theme) => ({
     }
   },
   item: {
-    width: "25%",
+    width: "35%",
+  },
+  selectItem: {
+    width: "40%",
   },
   brand: {
-    width: "18%",
+    width: "20%",
     "&.MuiAutocomplete-option": {
         background: 'white'
       }
   },
   quantity: {
-    width: "12%"
+    width: "15%"
   },
   detail: {
-    width: "16%"
+    width: "20%"
   },
   price: {
-    width: "14%"
+    width: "15%"
   },
   submit: {
     backgroundColor: theme.palette.secondary.main,
@@ -50,10 +50,14 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: theme.palette.secondary.intense,
     }
   },
-  // option: {
-  //   backgroundColor: 'white'
-  //
-  // },
+  toggle: {
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.primary.contrastText,
+    margin: '5px 0',
+    "&:hover": {
+      backgroundColor: theme.palette.primary.intense,
+    }
+  },
   paper: {
     backgroundColor: 'white'
   }
@@ -64,85 +68,137 @@ function ItemForm (props) {
   const classes = useStyles();
   const { items, brands, handleSubmit } = props
 
-  const [state, setState] = useState({
+  const [newProductForm, showForm] = useState(false)
+  const [newProduct, createProduct] = useState({
     item: '',
     brand: '',
-    detail: '',
+    detail: ''
+  });
+  const [selectedProduct, addProduct] = useState({
+    item: {},
     quantity: '',
     price: ''
   });
 
-  const handleChange = (value, field) => {
-    console.log('changed');
-    console.log(value);
-    setState({ ...state, [field]: value });
+  const handleChange = (value, field, action) => {
+    action === "create"?
+      createProduct({ ...newProduct, [field]: value }):
+      addProduct({ ...selectedProduct, [field]: value })
   };
 
-  return(
-    <form className={classes.form} onSubmit={e => handleSubmit(e, state)} >
-      <Autocomplete
-        options={items}
-        freeSolo={true}
-        classes={{
+  const handleItem = (e, state, action) => {
+    const clearForm = {
+      item: '',
+      brand: '',
+      detail: '',
+    }
+    const clearItem = {
+      item: {},
+      quatity: '',
+      price: ''
+    }
+    handleChange({}, 'item', 'add')
+
+    action === 'create'?
+      createProduct(clearForm):
+      addProduct(clearItem)
+
+    handleSubmit(e, state, action)
+  };
+
+  if(newProductForm){
+    return(
+      <form className={classes.form} onSubmit={e => handleItem(e, newProduct, 'create')} >
+        <FormControl fullWidth className={classes.item} variant="outlined">
+          <InputLabel htmlFor="item">Item</InputLabel>
+          <OutlinedInput
+            id="item"
+            value={newProduct.item}
+            onChange={(e) => handleChange(e.target.value, "item", 'create')}
+            labelWidth={60}
+            />
+        </FormControl>
+        <Autocomplete
+          options={brands}
+          freeSolo={true}
+          classes={{
+            paper: classes.paper,
+          }}
+          className={classes.brand}
+          inputValue={newProduct.brand}
+          onChange={(e) => handleChange(brands[e.target.value], "brand", 'create')}
+          renderInput={(params) => <TextField {...params}
+                                              label="Marca"
+                                              variant="outlined"
+                                              onChange={(e) => handleChange(e.target.value, "brand", 'create')}
+                                              />}
+          />
+        <FormControl fullWidth className={classes.detail} variant="outlined">
+          <InputLabel htmlFor="detail">Detalle</InputLabel>
+          <OutlinedInput
+            id="detail"
+            value={newProduct.detail}
+            onChange={(e) => handleChange(e.target.value, "detail", 'create')}
+            labelWidth={60}
+            />
+        </FormControl>
+        <Button variant="contained" size="small" className={classes.toggle} onClick={(e) => showForm(false)}>
+          Atras
+        </Button>
+        <Button variant="contained" size="small" className={classes.submit} type="submit">
+          Crear
+        </Button>
+      </form>
+    )
+  }else{
+    return(
+      <form className={classes.form} onSubmit={e => handleItem(e, selectedProduct, 'add')} >
+        <Autocomplete
+          value={selectedProduct.item}
+          options={items}
+          clearOnBlur={true}
+          classes={{
             paper: classes.paper,
             option: classes.option,
           }}
-        onChange={(e) => handleChange(items[e.target.value], "item")}
-        className={classes.item}
-        renderInput={(params) => <TextField {...params}
-                                    label="Item"
-                                    variant="outlined"
-                                    onChange={(e) => handleChange(e.target.value, "item")}
-                                  />}
-      />
-      <Autocomplete
-        options={brands}
-        freeSolo={true}
-        classes={{
-            paper: classes.paper,
+          getOptionLabel={(option) => Object.keys(option).length? option.itemFullName : ''}
+          onChange={(e, value) => {
+            handleChange(value, "item", 'add')
           }}
-        className={classes.brand}
-        onChange={(e) => handleChange(brands[e.target.value], "brand")}
-        renderInput={(params) => <TextField {...params}
-                                    label="Marca"
-                                    variant="outlined"
-                                    onChange={(e) => handleChange(e.target.value, "brand")}
-                                    />}
-      />
-    <FormControl fullWidth className={classes.quantity} variant="outlined">
-      <InputLabel htmlFor="quantity">Cantidad</InputLabel>
-      <OutlinedInput
-        id="quantity"
-        value={state.quantity}
-        onChange={(e) => handleChange(e.target.value, "quantity")}
-        labelWidth={60}
-        />
-      </FormControl>
-      <FormControl fullWidth className={classes.detail} variant="outlined">
-        <InputLabel htmlFor="detail">Detalle</InputLabel>
-        <OutlinedInput
-          id="detail"
-          value={state.detail}
-          onChange={(e) => handleChange(e.target.value, "detail")}
-          labelWidth={60}
+          className={classes.selectItem}
+          renderInput={(params) => <TextField {...params}
+                                              label="Item"
+                                              variant="outlined"
+                                              />}
           />
-      </FormControl>
-      <FormControl fullWidth className={classes.price} variant="outlined">
-        <InputLabel htmlFor="price">Precio</InputLabel>
-        <OutlinedInput
-        id="price"
-        value={state.price}
-        onChange={(e) => handleChange(e.target.value, "price")}
-        startAdornment={<InputAdornment position="start">Bs.</InputAdornment>}
-        labelWidth={60}
-        />
-      </FormControl>
-      <Button variant="contained" size="small" className={classes.submit} type="submit">
-        Insertar
-      </Button>
-    </form>
-
-  )
+        <FormControl fullWidth className={classes.quantity} variant="outlined">
+          <InputLabel htmlFor="quantity">Cantidad</InputLabel>
+          <OutlinedInput
+            id="quantity"
+            value={selectedProduct.quantity? selectedProduct.quantity : ''}
+            onChange={(e) => handleChange(e.target.value, "quantity", 'add')}
+            labelWidth={60}
+            />
+        </FormControl>
+        <FormControl fullWidth className={classes.price} variant="outlined">
+          <InputLabel htmlFor="price">Precio</InputLabel>
+          <OutlinedInput
+            id="price"
+            value={selectedProduct.price}
+            onChange={(e) => handleChange(e.target.value, "price", 'add')}
+            startAdornment={<InputAdornment position="start">Bs.</InputAdornment>}
+            labelWidth={60}
+            />
+        </FormControl>
+        <Button variant="contained" size="small" className={classes.toggle} onClick={(e) => showForm(true)}>
+          Nuevo Item
+        </Button>
+        <Button variant="contained" size="small" className={classes.submit} type="submit">
+          Insertar
+        </Button>
+      </form>
+    )
+  }
 }
 
 export default ItemForm

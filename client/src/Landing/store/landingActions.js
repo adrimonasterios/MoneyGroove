@@ -1,10 +1,10 @@
-import axios from 'axios'
+// import axios from 'axios'
 
 export const actionTypes = {
   // SET_ITEMS: 'SET_ITEMS'
 };
 
-// 
+//
 // export function setItems(payload) {
 //   return {
 //     type: actionTypes.SET_ITEMS,

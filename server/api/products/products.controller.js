@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Product = require("./Product");
 
-class UsersController {
+class ProductsController {
   async create(data) {
     try {
       const created = await Product.create(data);
@@ -14,7 +14,12 @@ class UsersController {
 
   async getAll() {
     try {
-      const products = await Product.find();
+      let projection = {
+        name: 1,
+        brand: 1,
+        detail: 1,
+      }
+      const products = await Product.find({}, projection);
       return products;
     } catch (err) {
       console.log(`Error while getting Products: ${err}`);
@@ -23,4 +28,4 @@ class UsersController {
   }
 }
 
-module.exports = new UsersController();
+module.exports = new ProductsController();

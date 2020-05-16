@@ -16,6 +16,7 @@ const moneyGrooveTheme = createMuiTheme(
              "light":"rgba(59, 41, 152, 0.5)",
              "main":"rgba(59, 41, 152, 1)",
              "dark":"rgba(43, 30, 113, 1)",
+             "intense":"rgba(56, 25, 221, 1)",
              "contrastText":"#fff"
           },
         "secondary":{

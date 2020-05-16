@@ -1,37 +1,53 @@
 import axios from 'axios'
-import * as authActions from '../../app/auth/store/authActions';
 
 export const actionTypes = {
-  ADD_PRODUCT: 'ADD_PRODUCT'
+  ADD_PRODUCT: 'ADD_PRODUCT',
+  SET_SAVED_PRODUCTS: 'SET_SAVED_PRODUCTS'
 };
 
 
-// export function setItems(payload) {
-//   return {
-//     type: actionTypes.SET_ITEMS,
-//     payload
-//    }
-// }
+export function addProduct(payload) {
+  payload = {
+    _id: payload.item._id,
+    name: payload.item.name,
+    brand: payload.item.brand,
+    detail: payload.item.detail,
+    price: payload.price,
+    quantity: payload.quantity
+  }
+  return {
+    type: actionTypes.ADD_PRODUCT,
+    payload
+   }
+}
 
-export function addProduct(data) {
+
+export function createProduct(data) {
   return async dispatch => {
     try{
-      console.log(data);
       let product = {
         name: data.item,
         brand: data.brand,
         detail: data.detail
       }
-      let token  = localStorage.getItem('jwtToken')
-      dispatch(authActions.authenticateUser(token)).then(async res => {
-        console.log(axios.defaults.headers.common["Authorization"]);
-        await axios.post('/api/products/create', product).then(res => {
-          dispatch({
-            type: actionTypes.ADD_PRODUCT,
-            payload: data
-          });
-          })
+
+      console.log(axios.defaults.headers.common["Authorization"]);
+      await axios.post('/api/products/create', product).then(res => {
+        dispatch(getProducts())
       })
+    }catch(err){
+      console.log(err);
+    }
+  }
+}
+
+
+export function getProducts() {
+  return async dispatch => {
+    try{
+      await axios.get('/api/products').then(products =>
+        dispatch(setProducts(products.data))
+      )
     }catch(err){
       // dispatch(setSuppliersError(JSON.parse(JSON.stringify(err)).response.data.msg));
       console.log(err);
@@ -39,13 +55,39 @@ export function addProduct(data) {
   }
 }
 
-export function getProducts() {
+
+export function setProducts(payload) {
+  payload = payload.map(p => {
+    p.itemFullName = `${p.name} ${p.brand} (${p.detail})`
+    return p
+  })
+
+  return {
+    type: actionTypes.SET_SAVED_PRODUCTS,
+    payload
+   }
+}
+
+
+export function createBill(data) {
   return async dispatch => {
     try{
-      let products = await axios.get('/api/products')
-      return products.data
+      await axios.post('/api/bills/create', data).then(res => {
+        dispatch(getBills()).then(res => res)
+      })
     }catch(err){
-      // dispatch(setSuppliersError(JSON.parse(JSON.stringify(err)).response.data.msg));
+      console.log(err);
+    }
+  }
+}
+
+
+export function getBills() {
+  return async dispatch => {
+    try{
+      let bills = await axios.get('/api/bills')
+      return bills.data
+    }catch(err){
       console.log(err);
     }
   }

@@ -1,18 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import axios from 'axios';
 import { withRouter } from "react-router-dom";
-import * as landingActions from './store/landingActions';
 import * as authActions from '../app/auth/store/authActions';
 
 import LoginForm from './components/LoginForm'
 import RegisterForm from './components/RegisterForm'
 
 import { withStyles } from '@material-ui/styles';
-import FormControl from '@material-ui/core/FormControl';
-import OutlinedInput from '@material-ui/core/OutlinedInput';
-import InputLabel from '@material-ui/core/InputLabel';
-import Button from '@material-ui/core/Button';
 
 
 const styles = theme => ({
@@ -95,7 +89,7 @@ class Landing extends React.Component{
 
   render(){
     const { registration } = this.state
-    const { classes, auth } = this.props
+    const { classes } = this.props
     // if(localStorage.jwtToken) this.props.history.push('/dashboard')
 
     return(

@@ -12,7 +12,6 @@ import Button from '@material-ui/core/Button';
 import DateFnsUtils from '@date-io/date-fns';
 import {
   MuiPickersUtilsProvider,
-  KeyboardTimePicker,
   KeyboardDatePicker,
 } from '@material-ui/pickers';
 
@@ -51,7 +50,7 @@ const styles = theme => ({
     display: 'flex',
     justifyContent: "space-between"
   },
-  market: {
+  store: {
     width: "65%",
     marginBottom: "2em",
     "& input": {
@@ -72,20 +71,16 @@ class Groceries extends React.Component{
   constructor(){
     super();
     this.state = {
-      savedItems: [],
       brands: ['brand1', 'brand2'],
       selectedDate: Date.now(),
-      market: ''
+      store: ''
     }
     this.handleSubmit = this.handleSubmit.bind(this)
     this.handleDateChange = this.handleDateChange.bind(this)
   }
 
   async componentDidMount(){
-    this.props.getProducts().then(res => {
-      let products = res.map(p => p.name)
-      this.setState({savedItems: products})
-    })
+    this.props.getProducts()
   }
 
   handleDateChange(e){
@@ -96,14 +91,33 @@ class Groceries extends React.Component{
     this.setState({[field]: e})
   }
 
-  handleSubmit(e, item){
+  handleSubmit(e, item, action){
     e.preventDefault()
-    console.log(item);
-    this.props.addProduct(item)
+    action === 'create'?
+      this.props.createProduct(item):
+      this.props.addProduct(item)
+  }
+
+  saveBill(items){
+    const { store, selectedDate: date }  = this.state
+    let storeItems = items.map(i => {
+      return {
+        itemId: i._id,
+        quantity: i.quantity,
+        price: i.price
+      }
+    })
+
+    let newBill = {
+      store,
+      date,
+      items: storeItems
+    }
+    this.props.createBill(newBill).then(res => console.log(res))
   }
 
   render(){
-    const { savedItems, brands, selectedDate } = this.state
+    const { brands, selectedDate } = this.state
     const { classes, groceries } = this.props
 
     return(
@@ -116,7 +130,11 @@ class Groceries extends React.Component{
           <div className={classes.newBill}>
             <div className={classes.title}>
               <h2 style={{fontWeight: 200, margin:0}}>Nueva Compra</h2>
-              <Button variant="contained" className={classes.save}>
+              <Button
+                variant="contained"
+                className={classes.save}
+                onClick={(e) => this.saveBill(groceries.items)}
+                >
                 Guardar Compra
               </Button>
             </div>
@@ -124,10 +142,10 @@ class Groceries extends React.Component{
               <Autocomplete
                 options={brands}
                 freeSolo={true}
-                className={classes.market}
+                className={classes.store}
                 renderInput={(params) => <TextField {...params}
                 label="Mercado"
-                onChange={(e) => this.handleChange(e.target.value, "market")}
+                onChange={(e) => this.handleChange(e.target.value, "store")}
                 />}
                 />
               <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -149,7 +167,7 @@ class Groceries extends React.Component{
 
             <ItemForm
               handleSubmit={this.handleSubmit}
-              items={savedItems}
+              items={groceries.savedProducts}
               brands={brands}
               />
             <Bill
@@ -170,7 +188,9 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = {
   addProduct: groceriesActions.addProduct,
+  createProduct: groceriesActions.createProduct,
   getProducts: groceriesActions.getProducts,
+  createBill: groceriesActions.createBill,
 }
 
 export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(Groceries));

@@ -16,27 +16,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import DeleteIcon from '@material-ui/icons/Delete';
-import FilterListIcon from '@material-ui/icons/FilterList';
 
-function createData(item, brand, quantity, detail, price) {
-  return { item, brand, quantity, detail, price };
-}
-
-const items = [
-  createData('Cupcake', 305, 3.7, 67, 4.3),
-  createData('Donut', 452, 25.0, 51, 4.9),
-  createData('Eclair', 262, 16.0, 24, 6.0),
-  createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-  createData('Gingerbread', 356, 16.0, 49, 3.9),
-  createData('Honeycomb', 408, 3.2, 87, 6.5),
-  createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-  createData('Jelly Bean', 375, 0.0, 94, 0.0),
-  createData('KitKat', 518, 26.0, 65, 7.0),
-  createData('Lollipop', 392, 0.2, 98, 0.0),
-  createData('Marshmallow', 318, 0, 81, 2.0),
-  createData('Nougat', 360, 19.0, 9, 37.0),
-  createData('Oreo', 437, 18.0, 63, 4.0),
-];
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -65,7 +45,7 @@ function stableSort(array, comparator) {
 }
 
 const headCells = [
-  { id: 'item', numeric: false, disablePadding: true, label: 'Item' },
+  { id: 'name', numeric: false, disablePadding: true, label: 'Item' },
   { id: 'brand', numeric: true, disablePadding: false, label: 'Marca' },
   { id: 'quantity', numeric: true, disablePadding: false, label: 'Cantidad' },
   { id: 'detail', numeric: true, disablePadding: false, label: 'Detalle' },
@@ -130,8 +110,8 @@ const useToolbarStyles = makeStyles((theme) => ({
   root: {
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(1),
-    background: theme.palette.primary.main,
-    color: 'white'
+    background: "#f1f1f1",
+    color: theme.palette.primary.main
   },
   highlight:
     theme.palette.type === 'light'
@@ -259,7 +239,7 @@ export default function Bill(props) {
   };
 
   const isSelected = (name) => selected.indexOf(name) !== -1;
-
+  
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
@@ -284,17 +264,17 @@ export default function Bill(props) {
             <TableBody>
               {stableSort(items, getComparator(order, orderBy))
                 .map((row, index) => {
-                  const isItemSelected = isSelected(row.item);
+                  const isItemSelected = isSelected(row._id);
                   const labelId = `enhanced-table-checkbox-${index}`;
 
                   return (
                     <TableRow
                       hover
-                      onClick={(event) => handleClick(event, row.item)}
+                      onClick={(event) => handleClick(event, row._id)}
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
-                      key={row.item}
+                      key={row._id}
                       selected={isItemSelected}
                     >
                       <TableCell padding="checkbox">
@@ -304,7 +284,7 @@ export default function Bill(props) {
                         />
                       </TableCell>
                       <TableCell component="th" id={labelId} scope="row" padding="none">
-                        {row.item}
+                        {row.name}
                       </TableCell>
                       <TableCell align="right">{row.brand}</TableCell>
                       <TableCell align="right">{row.quantity}</TableCell>

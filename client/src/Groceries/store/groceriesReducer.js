@@ -3,6 +3,7 @@ import { actionTypes } from './groceriesActions.js';
 
 export const initialState = {
     items: [],
+    savedProducts: []
 };
 
 export function groceriesReducer(state = initialState, action) {
@@ -23,6 +24,11 @@ export function groceriesReducer(state = initialState, action) {
       state.items.push(action.payload)
       return {
         ...state,
+      }
+    case actionTypes.SET_SAVED_PRODUCTS:
+      return {
+        ...state,
+        savedProducts: action.payload
       }
     default:
       return state

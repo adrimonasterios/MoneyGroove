@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom'
-import jwt_decode from "jwt-decode";
 import { withStyles } from '@material-ui/styles';
 
 import * as authActions from './auth/store/authActions';
@@ -20,7 +19,8 @@ const styles = theme => ({
     display: 'flex',
     width: "100%",
     height: "100%",
-    fontFamily: theme.typography.fontFamily
+    fontFamily: theme.typography.fontFamily,
+    color: "rgb(99, 99, 99)",
   }
 });
 
