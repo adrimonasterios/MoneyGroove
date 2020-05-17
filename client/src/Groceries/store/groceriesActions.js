@@ -5,6 +5,7 @@ export const actionTypes = {
   SET_SAVED_PRODUCTS: 'SET_SAVED_PRODUCTS',
   SET_BILLS: 'SET_BILLS',
   SET_SELECTED_BILL_ITEMS: 'SET_SELECTED_BILL_ITEMS',
+  CLEAR_STATE: 'CLEAR_STATE',
 };
 
 
@@ -74,7 +75,6 @@ export function setProducts(payload) {
 export function createBill(payload) {
   return async dispatch => {
     try{
-      console.log(payload);
       await axios.post('/api/bills/create', payload).then(res => {
         dispatch(getBills()).then(res => res)
       })
@@ -109,6 +109,14 @@ export function setBills(payload) {
 export function setSelectedBillItems(payload) {
   return {
     type: actionTypes.SET_SELECTED_BILL_ITEMS,
+    payload
+  }
+}
+
+
+export function clearState(payload = []) {
+  return {
+    type: actionTypes.CLEAR_STATE,
     payload
   }
 }

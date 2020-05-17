@@ -4,8 +4,6 @@ const Bill = require("./Bill");
 class BillsController {
   async create(data) {
     try {
-      console.log('and now');
-      console.log(data);
       const created = await Bill.create(data);
       return created;
     } catch (err) {

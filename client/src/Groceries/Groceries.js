@@ -1,6 +1,5 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import moment from 'moment-timezone';
 import * as groceriesActions from './store/groceriesActions';
 import * as helperFunctions from '../app/helpers.js';
 
@@ -39,6 +38,11 @@ const styles = theme => ({
     width: '30%',
     padding:'16px 24px'
   },
+  billsList: {
+    height: '80%',
+    paddingTop: '1em',
+    overflow: 'scroll'
+  },
   billContainer: {
     width: '70%',
     padding:'16px 24px',
@@ -61,6 +65,9 @@ const styles = theme => ({
       fontSize: '2em'
     }
   },
+  paper: {
+    backgroundColor: 'white'
+  },
   save: {
     backgroundColor: theme.palette.callToAction.main,
     color: theme.palette.secondary.contrastText,
@@ -71,7 +78,7 @@ const styles = theme => ({
   },
   savedBill: {
     padding: '3%',
-    marginTop: '1em',
+    marginBottom: '1em',
     color: theme.palette.text.secondary,
     display: 'flex',
     justifyContent: 'space-between',
@@ -81,6 +88,15 @@ const styles = theme => ({
       backgroundColor: lighten(theme.palette.primary.light, 0.9),
       color: theme.palette.primary.main
     }
+  },
+  selectedSavedBill: {
+    padding: '3%',
+    marginBottom: '1em',
+    color: 'white',
+    backgroundColor: theme.palette.primary.main,
+    display: 'flex',
+    justifyContent: 'space-between',
+    transition: '0.3'
   },
   total: {
     textAlign: 'right',
@@ -95,7 +111,7 @@ class Groceries extends React.Component{
   constructor(){
     super();
     this.state = {
-      brands: ['brand1', 'brand2'],
+      stores: [],
       selectedDate: Date.now(),
       store: '',
       selectedBill: {},
@@ -127,6 +143,7 @@ class Groceries extends React.Component{
 
   selectBill(bill){
     const { savedProducts : products } = this.props.groceries
+    if(this.state.newBillForm) this.setState({newBillForm: false})
     //find out which products does the bill have and populate each bill item with the product information (avoid loop within loop)
     const billItemsIds = bill.items.map(i => i.itemId)
     let billItems = {}
@@ -146,9 +163,15 @@ class Groceries extends React.Component{
     this.props.setSelectedBillItems(items)
   }
 
+  openNewBillForm(){
+    this.props.clearState(['items'])
+    this.setState({newBillForm: true, selectedBill: {}})
+  }
+
   getBillTotal(items){
     let total = 0;
     items.forEach(i => total += Number(i.price))
+    helperFunctions.formatAmount(String(total))
     return total
   }
 
@@ -167,84 +190,115 @@ class Groceries extends React.Component{
       date,
       items: storeItems
     }
-    this.props.createBill(newBill).then(res => console.log(res))
+    this.props.createBill(newBill)
+    this.setState({newBillForm: false})
   }
 
   render(){
-    const { brands, selectedDate, newBillForm, selectedBill } = this.state
+    const { store, selectedDate, newBillForm, selectedBill } = this.state
     const { classes, groceries } = this.props
+
+    let billsStores = this.props.groceries.bills.map(b => b.store)
+    let savedStores = [...new Set(billsStores)]
 
     return(
       <div className={classes.root}>
         <div className={classes.groceries}>
           <div className={classes.bills}>
             <h2 style={{fontWeight: 200, margin:0}}>Compras Anteriores</h2>
-            {groceries.bills.map((bill, i) =>
-              <Paper
-                key={i}
-                className={classes.savedBill}
-                onClick={e => this.selectBill(bill)}
-                >
-                <span style={{marginRight: '1em'}}>{bill.store}</span>
-                <span>{helperFunctions.formatDate(bill.date)}</span>
-              </Paper>
-            )}
-
-          </div>
-          <div className={classes.billContainer}>
-            <div className={classes.title}>
-              <h2 style={{fontWeight: 200, margin:0}}>
-                { !newBillForm && Object.keys(selectedBill).length ? `${selectedBill.store} (${helperFunctions.formatDate(selectedBill.date)})` : 'Nueva Compra'}
-              </h2>
-              <Button
-                variant="contained"
-                className={classes.save}
-                onClick={(e) => this.saveBill(groceries.items)}
-                >
-                { newBillForm ? 'Guardar Compra' : 'Actualizar Compra'}
-              </Button>
+            <div className={classes.billsList}>
+              {groceries.bills.reverse().map((bill, i) =>
+                <Paper
+                  key={i}
+                  className={selectedBill._id === bill._id? classes.selectedSavedBill : classes.savedBill}
+                  onClick={e => this.selectBill(bill)}
+                  >
+                  <span style={{marginRight: '1em'}}>{bill.store}</span>
+                  <span>{helperFunctions.formatDate(bill.date)}</span>
+                </Paper>
+              )}
             </div>
-            { newBillForm ?
-              <div className={classes.topForm}>
-                <Autocomplete
-                  options={brands}
-                  freeSolo={true}
-                  className={classes.store}
-                  renderInput={(params) => <TextField {...params}
-                  label="Mercado"
-                  onChange={(e) => this.handleChange(e.target.value, "store")}
-                  />}
-                  />
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                  <KeyboardDatePicker
-                    disableToolbar
-                    variant="inline"
-                    format="MM/dd/yyyy"
-                    margin="normal"
-                    id="date-picker-inline"
-                    label="Fecha de compra"
-                    value={selectedDate}
-                    onChange={this.handleDateChange}
-                    KeyboardButtonProps={{
-                      'aria-label': 'change date',
-                    }}
-                    />
-                </MuiPickersUtilsProvider>
-              </div>
-              :
-              ''
-            }
-            <ItemForm
-              handleSubmit={this.handleSubmit}
-              items={groceries.savedProducts}
-              brands={brands}
-              />
-            <Bill
-              size={ newBillForm ? 'small' : 'big'}
-              items={groceries.items}
-              />
-            <h2 className={classes.total}>Total:<span>{this.getBillTotal(groceries.items)}</span></h2>
+            <Button
+              variant="contained"
+              className={classes.save}
+              onClick={(e) => this.openNewBillForm()}
+              style={{marginTop: '12%'}}
+              >
+              Nueva Compra
+            </Button>
           </div>
+          {!newBillForm && !Object.keys(selectedBill).length ?
+            <div className={classes.billContainer}>
+              <p>Select a Bill</p>
+            </div>
+            :
+            <div className={classes.billContainer}>
+                <div className={classes.title}>
+                  <h2 style={{fontWeight: 200, margin:0}}>
+                    { !newBillForm && Object.keys(selectedBill).length ? `${selectedBill.store} (${helperFunctions.formatDate(selectedBill.date)})` : 'Nueva Compra'}
+                  </h2>
+                  <Button
+                    variant="contained"
+                    className={classes.save}
+                    onClick={(e) => this.saveBill(groceries.items)}
+                    >
+                    { newBillForm ? 'Guardar Compra' : 'Actualizar Compra'}
+                  </Button>
+                </div>
+                { newBillForm ?
+                  <div className={classes.topForm}>
+                      <Autocomplete
+
+                        options={savedStores}
+                        clearOnBlur={true}
+                        classes={{
+                          paper: classes.paper,
+                          option: classes.option,
+                        }}
+                        onChange={(e, value) => {
+                          this.handleChange(value, "store")
+                        }}
+                        className={classes.store}
+                        renderInput={(params) => <TextField {...params}
+                                                            label="Mercado"
+                                                            />}
+                        />
+                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                      <KeyboardDatePicker
+                        disableToolbar
+                        variant="inline"
+                        format="MM/dd/yyyy"
+                        margin="normal"
+                        id="date-picker-inline"
+                        label="Fecha de compra"
+                        value={selectedDate}
+                        onChange={this.handleDateChange}
+                        KeyboardButtonProps={{
+                          'aria-label': 'change date',
+                        }}
+                        />
+                    </MuiPickersUtilsProvider>
+                  </div>
+                  :
+                  ''
+                }
+                <ItemForm
+                  handleSubmit={this.handleSubmit}
+                  items={groceries.savedProducts}
+                  />
+                <Bill
+                  size={ newBillForm ? 'small' : 'big'}
+                  items={groceries.items}
+                  formatAmount={helperFunctions.formatAmount}
+                  />
+                <h2 className={classes.total}>
+                  Total:
+                  <span>
+                    {this.getBillTotal(groceries.items)}
+                  </span>
+                </h2>
+              </div>
+            }
         </div>
       </div>
     )
@@ -262,6 +316,7 @@ const mapDispatchToProps = {
   createBill: groceriesActions.createBill,
   getBills: groceriesActions.getBills,
   setSelectedBillItems: groceriesActions.setSelectedBillItems,
+  clearState: groceriesActions.clearState,
 }
 
 export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(Groceries));

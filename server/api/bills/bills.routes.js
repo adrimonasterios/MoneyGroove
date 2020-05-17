@@ -8,7 +8,7 @@ const BillsController = require('./bills.controller.js');
 // @desc Create Bill
 router.post('/create', passport.authenticate('jwt', {session: false}), function(request, response, next) {
   let data = request.body;
-  console.log(data);
+
   if (request.user) {
     data.userId = request.user.id
     data.lastUpdatedBy = request.user.email;

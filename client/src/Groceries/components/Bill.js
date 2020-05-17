@@ -211,7 +211,7 @@ export default function Bill(props) {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = items.map((n) => n.item);
+      const newSelecteds = items.map((n) => n._id);
       setSelected(newSelecteds);
       return;
     }
@@ -289,7 +289,7 @@ export default function Bill(props) {
                       <TableCell align="right">{row.brand}</TableCell>
                       <TableCell align="right">{row.quantity}</TableCell>
                       <TableCell align="right">{row.detail}</TableCell>
-                      <TableCell align="right">{row.price}</TableCell>
+                      <TableCell align="right">{props.formatAmount(row.price)}</TableCell>
                     </TableRow>
                   );
                 })}

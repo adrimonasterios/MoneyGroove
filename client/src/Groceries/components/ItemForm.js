@@ -66,7 +66,7 @@ const useStyles = makeStyles((theme) => ({
 
 function ItemForm (props) {
   const classes = useStyles();
-  const { items, brands, handleSubmit } = props
+  const { items, handleSubmit } = props
 
   const [newProductForm, showForm] = useState(false)
   const [newProduct, createProduct] = useState({
@@ -118,21 +118,15 @@ function ItemForm (props) {
             labelWidth={60}
             />
         </FormControl>
-        <Autocomplete
-          options={brands}
-          freeSolo={true}
-          classes={{
-            paper: classes.paper,
-          }}
-          className={classes.brand}
-          inputValue={newProduct.brand}
-          onChange={(e) => handleChange(brands[e.target.value], "brand", 'create')}
-          renderInput={(params) => <TextField {...params}
-                                              label="Marca"
-                                              variant="outlined"
-                                              onChange={(e) => handleChange(e.target.value, "brand", 'create')}
-                                              />}
-          />
+        <FormControl fullWidth className={classes.brand} variant="outlined">
+          <InputLabel htmlFor="brand">Marca</InputLabel>
+          <OutlinedInput
+            id="brand"
+            value={newProduct.brand}
+            onChange={(e) => handleChange(e.target.value, "brand", 'create')}
+            labelWidth={60}
+            />
+        </FormControl>
         <FormControl fullWidth className={classes.detail} variant="outlined">
           <InputLabel htmlFor="detail">Detalle</InputLabel>
           <OutlinedInput

@@ -29,6 +29,12 @@ export function groceriesReducer(state = initialState, action) {
         ...state,
         items: action.payload
       }
+    case actionTypes.CLEAR_STATE:
+      let keysToClear = action.payload.length? action.payload : Object.keys(initialState)
+      let clearedState = {...state}
+      keysToClear.forEach(key => clearedState[key]= initialState[key])
+      console.log(clearedState);
+      return clearedState
     default:
       return state
   }
