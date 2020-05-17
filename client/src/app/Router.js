@@ -20,7 +20,7 @@ const styles = theme => ({
     width: "100%",
     height: "100%",
     fontFamily: theme.typography.fontFamily,
-    color: "rgb(99, 99, 99)",
+    color: theme.palette.text.primary,
   }
 });
 

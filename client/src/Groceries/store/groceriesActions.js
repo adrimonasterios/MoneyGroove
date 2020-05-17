@@ -2,7 +2,9 @@ import axios from 'axios'
 
 export const actionTypes = {
   ADD_PRODUCT: 'ADD_PRODUCT',
-  SET_SAVED_PRODUCTS: 'SET_SAVED_PRODUCTS'
+  SET_SAVED_PRODUCTS: 'SET_SAVED_PRODUCTS',
+  SET_BILLS: 'SET_BILLS',
+  SET_SELECTED_BILL_ITEMS: 'SET_SELECTED_BILL_ITEMS',
 };
 
 
@@ -69,10 +71,11 @@ export function setProducts(payload) {
 }
 
 
-export function createBill(data) {
+export function createBill(payload) {
   return async dispatch => {
     try{
-      await axios.post('/api/bills/create', data).then(res => {
+      console.log(payload);
+      await axios.post('/api/bills/create', payload).then(res => {
         dispatch(getBills()).then(res => res)
       })
     }catch(err){
@@ -85,10 +88,27 @@ export function createBill(data) {
 export function getBills() {
   return async dispatch => {
     try{
-      let bills = await axios.get('/api/bills')
-      return bills.data
+      await axios.get('/api/bills').then(bills =>
+        dispatch(setBills(bills.data))
+      )
     }catch(err){
       console.log(err);
     }
+  }
+}
+
+
+export function setBills(payload) {
+  return {
+    type: actionTypes.SET_BILLS,
+    payload
+  }
+}
+
+
+export function setSelectedBillItems(payload) {
+  return {
+    type: actionTypes.SET_SELECTED_BILL_ITEMS,
+    payload
   }
 }

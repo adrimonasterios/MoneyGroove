@@ -177,7 +177,7 @@ const useStyles = makeStyles((theme) => ({
     maxHeight: 330,
   },
   bigContainer: {
-    maxHeight: 500,
+    maxHeight: 480,
   },
   table: {
     minWidth: 400,
@@ -239,7 +239,7 @@ export default function Bill(props) {
   };
 
   const isSelected = (name) => selected.indexOf(name) !== -1;
-  
+
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
