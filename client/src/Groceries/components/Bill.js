@@ -174,7 +174,7 @@ EnhancedTableToolbar.propTypes = {
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
-    marginTop: '2em'
+    // marginTop: '2em'
   },
   paper: {
     width: '100%',
@@ -182,10 +182,10 @@ const useStyles = makeStyles((theme) => ({
     overflow: 'hidden'
   },
   smallContainer: {
-    maxHeight: 330,
+    maxHeight: 350,
   },
   bigContainer: {
-    maxHeight: 480,
+    maxHeight: 460,
   },
   table: {
     minWidth: 400,

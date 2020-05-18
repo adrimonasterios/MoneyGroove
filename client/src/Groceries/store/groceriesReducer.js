@@ -4,7 +4,8 @@ import { actionTypes } from './groceriesActions.js';
 export const initialState = {
     items: [],
     savedProducts: [],
-    bills: []
+    bills: [],
+    error: ''
 };
 
 export function groceriesReducer(state = initialState, action) {
@@ -29,11 +30,15 @@ export function groceriesReducer(state = initialState, action) {
         ...state,
         items: action.payload
       }
+    case actionTypes.SET_VALIDATION_ERROR:
+      return {
+        ...state,
+        error: action.payload
+      }
     case actionTypes.CLEAR_STATE:
       let keysToClear = action.payload.length? action.payload : Object.keys(initialState)
       let clearedState = {...state}
       keysToClear.forEach(key => clearedState[key]= initialState[key])
-      console.log(clearedState);
       return clearedState
     default:
       return state

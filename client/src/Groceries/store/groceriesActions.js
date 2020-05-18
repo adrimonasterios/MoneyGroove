@@ -6,6 +6,7 @@ export const actionTypes = {
   SET_BILLS: 'SET_BILLS',
   SET_SELECTED_BILL_ITEMS: 'SET_SELECTED_BILL_ITEMS',
   CLEAR_STATE: 'CLEAR_STATE',
+  SET_VALIDATION_ERROR: 'SET_VALIDATION_ERROR',
 };
 
 
@@ -156,4 +157,12 @@ export function updateSelectedBill(payload) {
       console.log(err);
     }
   }
+}
+
+
+export function setValidationError(payload) {
+  return {
+    type: actionTypes.SET_VALIDATION_ERROR,
+    payload
+   }
 }

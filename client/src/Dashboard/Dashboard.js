@@ -1,4 +1,5 @@
 import React from 'react';
+import Placeholder from '../Utils/Placeholder'
 
 class Dashboard extends React.Component{
   constructor(){
@@ -10,8 +11,10 @@ class Dashboard extends React.Component{
 
   render(){
     return(
-      <div>
-        Dashboard
+      <div style={{minWidth: '90%'}}>
+        <Placeholder>
+          <p>Pagina en Construccion</p>
+        </Placeholder>
       </div>
     )
   }

@@ -89,31 +89,65 @@ function ItemForm (props) {
   });
 
   const handleChange = (value, field, action) => {
-    console.log(selectedProduct.item);
     action === "create"?
       createProduct({ ...newProduct, [field]: value }):
       addProduct({ ...selectedProduct, [field]: value })
   };
 
   const handleItem = (e, state, action) => {
-    const clearForm = {
-      item: '',
-      brand: '',
-      detail: '',
-    }
-    const clearItem = {
-      item: {},
-      quatity: '',
-      price: ''
-    }
-    handleChange({}, 'item', 'add')
+    e.preventDefault()
+    let isError = checkForErrors(state, action)
 
-    action === 'create'?
+    if(!isError){
+      const clearForm = {
+        item: '',
+        brand: '',
+        detail: '',
+      }
+      const clearItem = {
+        item: {},
+        quantity: '',
+        price: ''
+      }
+      handleChange({}, 'item', 'add')
+
+      action === 'create'?
       createProduct(clearForm):
       addProduct(clearItem)
 
-    handleSubmit(e, state, action)
+      props.setValidationError('')
+      handleSubmit(e, state, action)
+    }
   };
+
+  const checkForErrors = (state, action) => {
+    const { setValidationError } = props
+    let isError = false
+    //regex to see if string has only digits
+    let reg = /^\d+$/;
+    var regWithDot = /^[0-9]*\.?[0-9]*$/;
+
+    let emptyField = false
+    for(let key in state){
+      if(!state[key]) emptyField = true
+    }
+    if(emptyField){
+      setValidationError('Llena todos los campos, por favor')
+      isError = true
+    }else if(action === 'add'){
+      if(!items.includes(state.item)){
+        setValidationError('Tienes que elegir un item de la lista')
+        isError = true
+      }else if(!reg.test(state.quantity)){
+        setValidationError('La cantidad debe ser un numero')
+        isError = true
+      }else if(!regWithDot.test(state.price)){
+        setValidationError('El precio debe ser un numero')
+        isError = true
+      }
+    }
+    return isError
+  }
 
   if(newProductForm){
     return(

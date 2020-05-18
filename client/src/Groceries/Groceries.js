@@ -5,6 +5,7 @@ import * as helperFunctions from '../app/helpers.js';
 
 import ItemForm from './components/ItemForm.js'
 import Bill from './components/Bill.js'
+import Placeholder from '../Utils/Placeholder.js'
 
 import { withStyles } from '@material-ui/styles';
 import { lighten } from '@material-ui/core/styles';
@@ -81,12 +82,20 @@ const styles = theme => ({
       backgroundColor: theme.palette.callToAction.intense,
     }
   },
-  delete: {
-    backgroundColor: theme.palette.error.main,
-    color: theme.palette.error.contrastText,
+  saveB: {
+    color: theme.palette.callToAction.main,
     height: '3em',
     "&:hover": {
-      backgroundColor: theme.palette.error.light,
+      backgroundColor: theme.palette.error.contrastText,
+      color: theme.palette.callToAction.intense
+    }
+  },
+  delete: {
+    color: theme.palette.error.main,
+    height: '3em',
+    "&:hover": {
+      backgroundColor: theme.palette.error.contrastText,
+      color: theme.palette.error.light
     }
   },
   savedBill: {
@@ -117,6 +126,11 @@ const styles = theme => ({
     "&>span": {
       marginLeft: '0.5em'
     }
+  },
+  error:{
+    color: theme.palette.error.main,
+    height: '2.5em',
+    marginBottom: 0
   }
 });
 
@@ -245,15 +259,13 @@ class Groceries extends React.Component{
             </div>
             <div className={classes.billsButtons}>
               <Button
-                variant="contained"
-                className={classes.save}
+                className={classes.saveB}
                 onClick={(e) => this.openNewBillForm()}
                 >
                 Nueva Compra
               </Button>
               {Object.keys(selectedBill).length?
                 <Button
-                  variant="contained"
                   className={classes.delete}
                   onClick={(e) => this.deleteBill(selectedBill._id)}
                   >
@@ -266,7 +278,12 @@ class Groceries extends React.Component{
           </div>
           {!newBillForm && !Object.keys(selectedBill).length ?
             <div className={classes.billContainer}>
-              <p>Seleccione una Compra</p>
+              <Placeholder>
+                <p>Selecciona una Compra
+                  <br/>o<br/>
+                  Crea una nueva
+                </p>
+              </Placeholder>
             </div>
             :
             <div className={classes.billContainer}>
@@ -321,7 +338,9 @@ class Groceries extends React.Component{
                 <ItemForm
                   handleSubmit={this.handleSubmit}
                   items={groceries.savedProducts}
+                  setValidationError={this.props.setValidationError}
                   />
+                <p className={classes.error}>{groceries.error}</p>
                 <Bill
                   size={ newBillForm ? 'small' : 'big'}
                   items={groceries.items}
@@ -357,6 +376,7 @@ const mapDispatchToProps = {
   deleteSelectedBill: groceriesActions.deleteSelectedBill,
   removeBillItems: groceriesActions.removeBillItems,
   updateSelectedBill: groceriesActions.updateSelectedBill,
+  setValidationError: groceriesActions.setValidationError,
 }
 
 export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(Groceries));
