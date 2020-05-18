@@ -68,12 +68,25 @@ const styles = theme => ({
   paper: {
     backgroundColor: 'white'
   },
+  billsButtons:{
+    marginTop: '12%',
+    display: "flex",
+    justifyContent: "space-between"
+  },
   save: {
     backgroundColor: theme.palette.callToAction.main,
     color: theme.palette.secondary.contrastText,
     height: '3em',
     "&:hover": {
       backgroundColor: theme.palette.callToAction.intense,
+    }
+  },
+  delete: {
+    backgroundColor: theme.palette.error.main,
+    color: theme.palette.error.contrastText,
+    height: '3em',
+    "&:hover": {
+      backgroundColor: theme.palette.error.light,
     }
   },
   savedBill: {
@@ -163,6 +176,11 @@ class Groceries extends React.Component{
     this.props.setSelectedBillItems(items)
   }
 
+  deleteBill(id){
+    this.setState({selectedBill: {}})
+    this.props.deleteSelectedBill(id)
+  }
+
   openNewBillForm(){
     this.props.clearState(['items'])
     this.setState({newBillForm: true, selectedBill: {}})
@@ -171,12 +189,12 @@ class Groceries extends React.Component{
   getBillTotal(items){
     let total = 0;
     items.forEach(i => total += Number(i.price))
-    helperFunctions.formatAmount(String(total))
+    total = helperFunctions.formatAmount(String(total))
     return total
   }
 
   saveBill(items){
-    const { store, selectedDate: date }  = this.state
+    const { store, selectedDate: date, selectedBill, newBillForm }  = this.state
     let storeItems = items.map(i => {
       return {
         itemId: i._id,
@@ -184,18 +202,25 @@ class Groceries extends React.Component{
         price: i.price
       }
     })
+    if(Object.keys(selectedBill).length){
+      const updatedBill = Object.assign({}, selectedBill);
+      updatedBill.items = storeItems
+      this.props.updateSelectedBill(updatedBill)
+      this.setState({selectedBill: {}})
+    }else if(newBillForm){
 
-    let newBill = {
-      store,
-      date,
-      items: storeItems
+      let newBill = {
+        store,
+        date,
+        items: storeItems
+      }
+      this.props.createBill(newBill)
+      this.setState({newBillForm: false})
     }
-    this.props.createBill(newBill)
-    this.setState({newBillForm: false})
   }
 
   render(){
-    const { store, selectedDate, newBillForm, selectedBill } = this.state
+    const { selectedDate, newBillForm, selectedBill } = this.state
     const { classes, groceries } = this.props
 
     let billsStores = this.props.groceries.bills.map(b => b.store)
@@ -218,18 +243,30 @@ class Groceries extends React.Component{
                 </Paper>
               )}
             </div>
-            <Button
-              variant="contained"
-              className={classes.save}
-              onClick={(e) => this.openNewBillForm()}
-              style={{marginTop: '12%'}}
-              >
-              Nueva Compra
-            </Button>
+            <div className={classes.billsButtons}>
+              <Button
+                variant="contained"
+                className={classes.save}
+                onClick={(e) => this.openNewBillForm()}
+                >
+                Nueva Compra
+              </Button>
+              {Object.keys(selectedBill).length?
+                <Button
+                  variant="contained"
+                  className={classes.delete}
+                  onClick={(e) => this.deleteBill(selectedBill._id)}
+                  >
+                  Eliminar Compra
+                </Button>
+                :
+                ""
+              }
+            </div>
           </div>
           {!newBillForm && !Object.keys(selectedBill).length ?
             <div className={classes.billContainer}>
-              <p>Select a Bill</p>
+              <p>Seleccione una Compra</p>
             </div>
             :
             <div className={classes.billContainer}>
@@ -248,7 +285,6 @@ class Groceries extends React.Component{
                 { newBillForm ?
                   <div className={classes.topForm}>
                       <Autocomplete
-
                         options={savedStores}
                         clearOnBlur={true}
                         classes={{
@@ -290,6 +326,7 @@ class Groceries extends React.Component{
                   size={ newBillForm ? 'small' : 'big'}
                   items={groceries.items}
                   formatAmount={helperFunctions.formatAmount}
+                  removeBillItems={this.props.removeBillItems}
                   />
                 <h2 className={classes.total}>
                   Total:
@@ -317,6 +354,9 @@ const mapDispatchToProps = {
   getBills: groceriesActions.getBills,
   setSelectedBillItems: groceriesActions.setSelectedBillItems,
   clearState: groceriesActions.clearState,
+  deleteSelectedBill: groceriesActions.deleteSelectedBill,
+  removeBillItems: groceriesActions.removeBillItems,
+  updateSelectedBill: groceriesActions.updateSelectedBill,
 }
 
 export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(Groceries));

@@ -21,6 +21,30 @@ class BillsController {
       throw err;
     }
   }
+
+  update(id, data) {
+    return new Promise(function(resolve, reject) {
+      Bill.findByIdAndUpdate(id, data, {
+          runValidators: true
+        })
+        .then(bills => {
+          resolve(data)
+        })
+        .catch(err => reject(err));
+    });
+  }
+
+  async delete(ids) {
+    return new Promise(function(resolve, reject) {
+      Bill.remove({
+          _id: {
+            $in: ids
+          }
+        })
+        .then(bills => resolve(bills))
+        .catch(err => reject(err));
+    });
+  }
 }
 
 module.exports = new BillsController();

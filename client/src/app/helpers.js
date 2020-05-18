@@ -6,7 +6,6 @@ export function formatDate(date) {
 }
 
 export function formatAmount(amount) {
-  console.log(amount);
   if(typeof amount !== 'string'){
     console.log('amount is not string');
   }else if(!amount.includes('.')){

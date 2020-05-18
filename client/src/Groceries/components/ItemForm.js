@@ -59,7 +59,15 @@ const useStyles = makeStyles((theme) => ({
     }
   },
   paper: {
-    backgroundColor: 'white'
+    backgroundColor: 'white',
+    "& *":{
+      backgroundColor: 'white !important'
+    }
+  },
+  option: {
+    "&:hover":{
+      backgroundColor: '#f5f5f5 !important'
+    }
   }
 }));
 
@@ -81,6 +89,7 @@ function ItemForm (props) {
   });
 
   const handleChange = (value, field, action) => {
+    console.log(selectedProduct.item);
     action === "create"?
       createProduct({ ...newProduct, [field]: value }):
       addProduct({ ...selectedProduct, [field]: value })
@@ -155,6 +164,7 @@ function ItemForm (props) {
             paper: classes.paper,
             option: classes.option,
           }}
+          getOptionSelected={(option, value) => !Object.keys(value).length ? true : option === value}
           getOptionLabel={(option) => Object.keys(option).length? option.itemFullName : ''}
           onChange={(e, value) => {
             handleChange(value, "item", 'add')

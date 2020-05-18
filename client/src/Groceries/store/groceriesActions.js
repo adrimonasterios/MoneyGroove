@@ -120,3 +120,40 @@ export function clearState(payload = []) {
     payload
   }
 }
+
+
+export function deleteSelectedBill(payload) {
+  return async dispatch => {
+    try{
+      await axios.delete(`/api/bills/${payload}`).then(res => {
+        res.data === "OK" &&
+        dispatch(getBills())
+      })
+    }catch(err){
+      console.log(err);
+    }
+  }
+}
+
+
+export function removeBillItems(itemsToRemove, items) {
+  let newItemsArray = items.filter(item => !itemsToRemove.includes(item._id))
+  return {
+    type: actionTypes.SET_SELECTED_BILL_ITEMS,
+    payload: newItemsArray
+   }
+}
+
+
+export function updateSelectedBill(payload) {
+  return async dispatch => {
+    try{
+      await axios.put(`/api/bills/${payload._id}`, payload).then(res => {
+        res.data === "OK" &&
+        dispatch(getBills())
+      })
+    }catch(err){
+      console.log(err);
+    }
+  }
+}

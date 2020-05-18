@@ -150,8 +150,16 @@ const EnhancedTableToolbar = (props) => {
 
       {numSelected > 0 && (
         <Tooltip title="Delete">
-          <IconButton aria-label="delete">
-            <DeleteIcon style={{color: "#ff3b5e"}}/>
+          <IconButton
+            aria-label="delete"
+            onClick={(e) => {
+              props.removeSelectedItems(props.selected, props.items)
+              props.setSelected([])
+            }}
+            >
+            <DeleteIcon
+              style={{color: "#ff3b5e"}}
+              />
           </IconButton>
         </Tooltip>
       )}
@@ -238,12 +246,18 @@ export default function Bill(props) {
     setSelected(newSelected);
   };
 
-  const isSelected = (name) => selected.indexOf(name) !== -1;
+  const isSelected = (id) => selected.indexOf(id) !== -1;
 
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
-        <EnhancedTableToolbar numSelected={selected.length} />
+        <EnhancedTableToolbar
+          numSelected={selected.length}
+          removeSelectedItems={props.removeBillItems}
+          selected={selected}
+          setSelected={setSelected}
+          items={items}
+          />
         <TableContainer className={props.size === 'big'? classes.bigContainer: classes.smallContainer}>
           <Table
             stickyHeader
