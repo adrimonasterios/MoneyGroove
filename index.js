@@ -3,11 +3,10 @@ const axios = require('axios');
 const mongoose = require('mongoose');
 const bodyParser = require("body-parser");
 const passport = require("passport");
+require('dotenv').config({ path: './.env' });
 
 
 const app = express();
-console.log(JSON.stringify(require('./server/config')));
-console.log(require('./server/config').keys.mongoURI);
 const db = require('./server/config').keys.mongoURI
 const PORT = process.env.PORT || 8000;
 
