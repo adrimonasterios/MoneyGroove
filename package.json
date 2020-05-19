@@ -8,7 +8,7 @@
     "dev.client": "cd client && npm start",
     "dev": "concurrently \"npm run dev.server\" \"npm run dev.client\"",
     "prod.server": "sudo service nginx stop && sudo service nginx start && pm2 stop 0 && pm2 start 0",
-    "prod.client": "cd client && sudo npm run build"
+    "prod.client": "cd client && sudo npm run build",
     "prod": "concurrently \"npm run prod.server\" \"npm run prod.client\"",
   },
   "repository": {
