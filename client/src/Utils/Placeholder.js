@@ -7,7 +7,6 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
     height: '100%',
     padding:'80px 24px',
-    borderLeft: "1px #eaeaea solid",
     display: "flex",
     justifyContent: "center",
     "&>p":{

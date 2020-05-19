@@ -6,6 +6,8 @@ const passport = require("passport");
 
 
 const app = express();
+console.log(JSON.stringify(require('./server/config')));
+console.log(require('./server/config').keys.mongoURI);
 const db = require('./server/config').keys.mongoURI
 const PORT = process.env.PORT || 8000;
 
