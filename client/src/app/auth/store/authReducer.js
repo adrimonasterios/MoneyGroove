@@ -4,7 +4,8 @@ const isEmpty = require("is-empty");
 export const initialState = {
   isAuthenticated: false,
   user: {},
-  loading: false
+  loading: false,
+  error: ''
 };
 
 export function authReducer(state = initialState, action) {
@@ -19,6 +20,11 @@ export function authReducer(state = initialState, action) {
       return {
         ...state,
         loading: action.payload
+      };
+    case 'GET_ERRORS':
+      return {
+        ...state,
+        error: action.payload.error
       };
     default:
       return state;

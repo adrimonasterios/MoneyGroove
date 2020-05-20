@@ -35,7 +35,6 @@ export function createProduct(data) {
         detail: data.detail
       }
 
-      console.log(axios.defaults.headers.common["Authorization"]);
       await axios.post('/api/products/create', product).then(res => {
         dispatch(getProducts())
       })

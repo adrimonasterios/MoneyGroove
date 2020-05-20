@@ -12,9 +12,9 @@ class BillsController {
     }
   }
 
-  async getAll() {
+  async getAll(userId) {
     try {
-      const bills = await Bill.find();
+      const bills = await Bill.find({userId});
       return bills;
     } catch (err) {
       console.log(`Error while getting Billss: ${err}`);

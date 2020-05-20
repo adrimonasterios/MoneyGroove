@@ -13,7 +13,8 @@ export const actionTypes = {
 export const registerUser = (userData, history) => dispatch => {
   axios
     .post("/api/users/register", userData)
-    .then(res => history.push("/login")) // re-direct to login on successful register
+    .then(res => dispatch(loginUser({email: res.data.email, password: userData.password}, history))) // re-direct to login on successful register
+    // .then(res => history.push("/login")) // re-direct to login on successful register
     .catch(err =>
       dispatch({
         type: actionTypes.GET_ERRORS,
@@ -37,6 +38,8 @@ export const loginUser = (userData, history) => dispatch => {
       const decoded = jwt_decode(token);
       // Set current user
       dispatch(setCurrentUser(decoded))
+      history.push('/dashboard')
+      window.location.reload();
     })
     .catch(err => {
       dispatch({

@@ -170,24 +170,27 @@ class Groceries extends React.Component{
 
   selectBill(bill){
     const { savedProducts : products } = this.props.groceries
-    if(this.state.newBillForm) this.setState({newBillForm: false})
-    //find out which products does the bill have and populate each bill item with the product information (avoid loop within loop)
-    const billItemsIds = bill.items.map(i => i.itemId)
-    let billItems = {}
-    products.filter(p => billItemsIds.includes(p._id)).forEach(p => billItems[p._id] = p)
-    let items = bill.items.map(i => {
-      let item = {
-        _id: i.itemId,
-        name: billItems[i.itemId].name,
-        brand: billItems[i.itemId].brand,
-        detail: billItems[i.itemId].detail,
-        price: i.price,
-        quantity: i.quantity
-      }
-      return item
-    })
     this.setState({selectedBill: bill})
-    this.props.setSelectedBillItems(items)
+
+    if(Object.keys(products).length){
+      if(this.state.newBillForm) this.setState({newBillForm: false})
+      //find out which products does the bill have and populate each bill item with the product information (avoid loop within loop)
+      const billItemsIds = bill.items.map(i => i.itemId)
+      let billItems = {}
+      products.filter(p => billItemsIds.includes(p._id)).forEach(p => billItems[p._id] = p)
+      let items = bill.items.map(i => {
+        let item = {
+          _id: i.itemId,
+          name: billItems[i.itemId].name,
+          brand: billItems[i.itemId].brand,
+          detail: billItems[i.itemId].detail,
+          price: i.price,
+          quantity: i.quantity
+        }
+        return item
+      })
+      this.props.setSelectedBillItems(items)
+    }
   }
 
   deleteBill(id){
@@ -207,6 +210,22 @@ class Groceries extends React.Component{
     return total
   }
 
+  saveBillValidation(store, date, items){
+    const { setValidationError } = this.props
+    let isValid = true
+    if(!store){
+      setValidationError('Campo Mercado es requerido')
+      isValid = false
+    }else if(!date){
+      setValidationError('Capo Fecha es requerido')
+      isValid = false
+    }else if(!Object.keys(items).length){
+      setValidationError('La lista de compra esta vacia')
+      isValid = false
+    }
+    return isValid
+  }
+
   saveBill(items){
     const { store, selectedDate: date, selectedBill, newBillForm }  = this.state
     let storeItems = items.map(i => {
@@ -216,6 +235,8 @@ class Groceries extends React.Component{
         price: i.price
       }
     })
+    let isValid = this.saveBillValidation(store, date, storeItems)
+    if(!isValid) return
     if(Object.keys(selectedBill).length){
       const updatedBill = Object.assign({}, selectedBill);
       updatedBill.items = storeItems
@@ -303,7 +324,8 @@ class Groceries extends React.Component{
                   <div className={classes.topForm}>
                       <Autocomplete
                         options={savedStores}
-                        clearOnBlur={true}
+                        freeSolo={true}
+                        onInputChange={(e, value) => this.handleChange(value, "store")}
                         classes={{
                           paper: classes.paper,
                           option: classes.option,
@@ -313,6 +335,7 @@ class Groceries extends React.Component{
                         }}
                         className={classes.store}
                         renderInput={(params) => <TextField {...params}
+
                                                             label="Mercado"
                                                             />}
                         />

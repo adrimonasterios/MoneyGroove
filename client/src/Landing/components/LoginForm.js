@@ -60,6 +60,10 @@ const useStyles = makeStyles((theme) => ({
     backgroundImage: `linear-gradient(${theme.palette.secondary.light} 0%, ${theme.palette.secondary.main} 100%)`,
     color: theme.palette.secondary.contrastText,
     fontWeight: '400',
+  },
+  error: {
+    color: theme.palette.error.main,
+    marginBottom: 0
   }
 }));
 
@@ -104,6 +108,7 @@ function LoginForm (props) {
           />
         </FormControl>
       </form>
+      <p className={classes.error}>{props.error}</p>
       <div className={classes.submitContainer}>
         <p className={classes.text}>
           No tienes una cuenta? <span onClick={(e) => register(true)}>Registrate</span>

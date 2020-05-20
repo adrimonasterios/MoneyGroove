@@ -10,7 +10,7 @@ class UsersController {
       const data = req.body
       User.findOne({ email: data.email }).then(user => {
         if (user) {
-          return res.status(400).json({ email: "Email already exists" });
+          return res.status(400).json({error: "Email already exists" });
         } else {
           const newUser = new User({
             name: data.name,
@@ -47,7 +47,8 @@ class UsersController {
       // Find user by email
       User.findOne({ email }).then(user => {
         if (!user) {
-          return res.status(404).json({ emailnotfound: "Email not found" });
+          res.status(404).json({ error: "Credenciales Incorrectas" });
+          return
         }
         // Check password
         bcrypt.compare(password, user.password).then(isMatch => {
@@ -75,7 +76,7 @@ class UsersController {
           } else {
             return res
               .status(400)
-              .json({ passwordincorrect: "Password incorrect" });
+              .json({ error: "Credenciales Incorrectas" });
           }
         });
       });

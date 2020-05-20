@@ -12,14 +12,14 @@ class ProductsController {
     }
   }
 
-  async getAll() {
+  async getAll(userId) {
     try {
       let projection = {
         name: 1,
         brand: 1,
         detail: 1,
       }
-      const products = await Product.find({}, projection);
+      const products = await Product.find({userId}, projection);
       return products;
     } catch (err) {
       console.log(`Error while getting Products: ${err}`);

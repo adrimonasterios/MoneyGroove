@@ -23,8 +23,13 @@ router.post('/create', passport.authenticate('jwt', {session: false}), function(
 // @route GET api/bills
 // @desc Get Bills
 router.get('/', passport.authenticate('jwt', {session: false}), function(request, response, next) {
+  let userId = ''
 
-  BillsController.getAll()
+  if (request.user) {
+    userId = request.user.id
+  }
+
+  BillsController.getAll(userId)
     .then(products => response.json(products))
     .catch(err => next(err));
 });

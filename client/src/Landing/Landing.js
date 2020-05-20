@@ -89,7 +89,7 @@ class Landing extends React.Component{
 
   render(){
     const { registration } = this.state
-    const { classes } = this.props
+    const { classes, auth } = this.props
     // if(localStorage.jwtToken) this.props.history.push('/dashboard')
 
     return(
@@ -107,10 +107,12 @@ class Landing extends React.Component{
             <RegisterForm
               handleSubmit={this.handleSubmit}
               register={this.register}
+              error={auth.error}
               /> :
             <LoginForm
               handleSubmit={this.handleSubmit}
               register={this.register}
+              error={auth.error}
               />
           }
         </div>

@@ -10,6 +10,7 @@ router.post('/create', passport.authenticate('jwt', {session: false}), function(
   let data = request.body;
 
   if (request.user) {
+    data.userId = request.user.id;
     data.lastUpdatedBy = request.user.email;
     data.lastUpdated = new Date();
   }
@@ -22,8 +23,13 @@ router.post('/create', passport.authenticate('jwt', {session: false}), function(
 // @route GET api/products
 // @desc Get Products
 router.get('/', passport.authenticate('jwt', {session: false}), function(request, response, next) {
+  let userId = ''
 
-  ProductsController.getAll()
+  if (request.user) {
+    userId = request.user.id;
+  }
+
+  ProductsController.getAll(userId)
     .then(products => response.json(products))
     .catch(err => next(err));
 });

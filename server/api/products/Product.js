@@ -14,6 +14,10 @@ const ProductSchema = new Schema({
     type: String,
     required: true
   },
+  userId: {
+    type: Schema.ObjectId,
+    ref: 'users'
+  },
   lastUpdated: Date,
   lastUpdatedBy: String,
 })
