@@ -6,6 +6,7 @@ const User = require("./User");
 
 class UsersController {
   async create(req, res, next) {
+    console.log('in create');
     try {
       const data = req.body
       User.findOne({ email: data.email }).then(user => {
@@ -40,6 +41,7 @@ class UsersController {
   }
 
   async authenticate(req, res, next) {
+    console.log('in login');
     try {
       const data = req.body
       const email = data.email;

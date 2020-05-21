@@ -15,6 +15,7 @@ router.post('/register', function(request, response, next) {
   if (!isValid) {
     return response.status(400).json(errors);
   }
+  console.log('registering');
 
   UsersController.create(request, response, next)
 });
@@ -30,6 +31,7 @@ router.post('/login', function(request, response, next) {
   if (!isValid) {
     return response.status(400).json(errors);
   }
+  console.log('logging in');
 
   UsersController.authenticate(request, response, next)
 });
