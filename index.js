@@ -3,7 +3,7 @@ const axios = require('axios');
 const mongoose = require('mongoose');
 const bodyParser = require("body-parser");
 const passport = require("passport");
-require('dotenv').config();
+const path = require('path');
 
 
 const app = express();
