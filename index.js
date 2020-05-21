@@ -26,4 +26,8 @@ app.use(passport.initialize());
 
 app.use('/api', require('./server/api'));
 
+app.get('*', function(request, response) {
+  response.sendFile(path.resolve(`${__dirname}/client/build`, 'index.html'));
+});
+
 app.listen(PORT, () => console.log("Listening on port " + PORT));
