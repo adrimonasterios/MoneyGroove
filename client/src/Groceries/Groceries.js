@@ -22,8 +22,12 @@ const styles = theme => ({
     boxShadow: '0 2px 4px 0 #c5c5e2;',
     backgroundColor: '#fff',
     height: '100%',
-    width: '100%'
+    width: '100%',
   },
+  lineChart: {
+    height: '50%',
+    width: '50%'
+  }
 });
 
 class Groceries extends React.Component{
@@ -45,12 +49,17 @@ class Groceries extends React.Component{
     return(
       <div className={classes.root}>
         <div className={classes.groceries}>
-          {Object.keys(groceries.lineChartData).length?
-            <Line
-              data={groceries.lineChartData}
-              />:
-              ''
-          }
+          <div className={classes.lineChart}>
+            {Object.keys(groceries.lineChartData).length?
+              <Line
+                data={groceries.lineChartData}
+                options={{
+                  responsive: true
+                }}
+                />:
+                ''
+            }
+          </div>
         </div>
       </div>
     )

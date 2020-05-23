@@ -102,6 +102,10 @@ export function getBills() {
 export function setBillTotalsByPeriod(bills){
   //hacer un loop sobre los bills
   //ver de que mes es el bill
+  let months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+  let currentMonth = new Date
+  console.log(currentMonth);
+  currentMonth = currentMonth.getMonth()
   let periods = []
   bills.forEach((bill, i) => {
     let date = new Date(bill.date)
@@ -117,8 +121,15 @@ export function setBillTotalsByPeriod(bills){
       })
   })
   let data = {
-    labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
-    datasets: [{data:periods}]
+    labels: months.filter((m, i) => i <= currentMonth),
+    datasets: [
+      {
+        label: 'Total Mercado',
+        data:periods,
+        backgroundColor: 'rgba(173, 200, 37, 0.4)',
+        borderColor: 'rgba(173, 200, 37, 1)'
+      }
+    ]
   }
   return {
     type: actionTypes.SET_LINE_CHART_DATA,
