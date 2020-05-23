@@ -1,4 +1,6 @@
 import React from 'react'
+import Logo from './Logo'
+
 import { makeStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -10,6 +12,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.primary.main,
     // backgroundColor: theme.palette.background.paper,
     display: 'flex',
+    flexDirection: 'column',
     height: '100vh',
   },
   rootH: {
@@ -46,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
   },
   hIndicator: {
     backgroundColor: "rgba(0,0,0,0)"
-  }
+  },
 }));
 
 export default function Navbar(props) {
@@ -62,6 +65,14 @@ export default function Navbar(props) {
 
   return (
     <div className={'layout' in props && props.layout === 'horizontal'? classes.rootH : classes.rootV}>
+      <Logo
+        logoStyle={{
+          height:"40px",
+          margin:'1em 0 1em 2em',
+          alignSelf: 'flex-start'
+        }}
+        pathStyle={{fill: "rgba(255,255,255,0.5)"}}
+        />
       <Tabs
         orientation={props.layout || 'vertical'}
         variant={props.variant || 'scrollable'}

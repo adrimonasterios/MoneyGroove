@@ -5,9 +5,9 @@ import * as authActions from '../app/auth/store/authActions';
 
 import LoginForm from './components/LoginForm'
 import RegisterForm from './components/RegisterForm'
+import Logo from '../Utils/Logo'
 
 import { withStyles } from '@material-ui/styles';
-
 
 const styles = theme => ({
   landing: {
@@ -31,9 +31,14 @@ const styles = theme => ({
     opacity: "0.05",
     filter: "contrast(200%) grayscale(1)"
   },
+  logo: {
+    marginTop: '500px'
+  },
   homeText: {
     position: "absolute",
     marginLeft: "10%",
+    display:'flex',
+    flexDirection: 'column',
     "& *": {
       color: theme.palette.primary.contrastText,
       fontWeight: "200"
@@ -98,6 +103,10 @@ class Landing extends React.Component{
           <div className={classes.gradientImage}>
           </div>
           <div className={classes.homeText}>
+            <Logo
+              logoStyle={{height:"160px"}}
+              pathStyle={{fill:"rgba(255,255,255,0.5)"}}
+              />
             <p style={{fontSize: '4em'}}>Money Groove</p>
             <p style={{fontSize: '1.5em'}}>Manejo de Finanzas Personales</p>
           </div>

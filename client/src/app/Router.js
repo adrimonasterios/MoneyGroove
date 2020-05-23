@@ -8,6 +8,7 @@ import * as authActions from './auth/store/authActions';
 import Landing from '../Landing/Landing.js'
 import Dashboard from '../Dashboard/Dashboard.js'
 import Groceries from '../Groceries/Groceries.js'
+import Bills from '../Groceries/Bills.js'
 import Navbar from '../Utils/Navbar.js'
 import Logout from '../Utils/Logout.js'
 import PrivateRoute from './auth/store/helpers/PrivateRoute.js'
@@ -70,16 +71,10 @@ class Routes extends React.Component{
                                             currentPath={currentPathIndex}
                                             />}/>
                                           : ''}
-          <PrivateRoute
-            exact
-            path="/dashboard"
-            component={Dashboard}
-            />
-          <PrivateRoute
-            exact
-            path="/mercado"
-            component={Groceries}
-            />
+
+          <PrivateRoute path="/dashboard" component={Dashboard}/>
+          <PrivateRoute path="/mercado" component={Groceries}/>
+          <PrivateRoute path="/compras" component={Bills}/>
 
           <Route exact path="/home" component={Landing}/>
           <Route exact path="/logout" render={() => <Logout logoutUser={this.props.logoutUser}/>}/>

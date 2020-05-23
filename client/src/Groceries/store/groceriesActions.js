@@ -7,6 +7,7 @@ export const actionTypes = {
   SET_SELECTED_BILL_ITEMS: 'SET_SELECTED_BILL_ITEMS',
   CLEAR_STATE: 'CLEAR_STATE',
   SET_VALIDATION_ERROR: 'SET_VALIDATION_ERROR',
+  SET_LINE_CHART_DATA: 'SET_LINE_CHART_DATA',
 };
 
 
@@ -98,10 +99,42 @@ export function getBills() {
 }
 
 
-export function setBills(payload) {
+export function setBillTotalsByPeriod(bills){
+  //hacer un loop sobre los bills
+  //ver de que mes es el bill
+  let periods = []
+  bills.forEach((bill, i) => {
+    let date = new Date(bill.date)
+    let billMonth = date.getMonth()
+
+    //Get bill total and assign it to its month
+    periods[billMonth] =
+    bill.items.length === 1?
+      Number(bill.items[0].price) :
+      bill.items.reduce((accumulator, current, index) => {
+        accumulator = index <= 1? Number(accumulator.price) : accumulator
+         return accumulator + Number(current.price)
+      })
+  })
+  let data = {
+    labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+    datasets: [{data:periods}]
+  }
   return {
-    type: actionTypes.SET_BILLS,
-    payload
+    type: actionTypes.SET_LINE_CHART_DATA,
+    payload: data
+  }
+
+}
+
+
+export function setBills(payload) {
+  return async dispatch => {
+    dispatch(setBillTotalsByPeriod(payload))
+    return {
+      type: actionTypes.SET_BILLS,
+      payload
+    }
   }
 }
 
