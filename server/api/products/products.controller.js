@@ -17,6 +17,7 @@ class ProductsController {
       let projection = {
         name: 1,
         brand: 1,
+        category:1,
         detail: 1,
       }
       const products = await Product.find({userId}, projection);

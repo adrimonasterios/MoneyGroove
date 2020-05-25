@@ -30,7 +30,21 @@ router.get('/', passport.authenticate('jwt', {session: false}), function(request
   }
 
   BillsController.getAll(userId)
-    .then(products => response.json(products))
+    .then(bills => response.json(bills))
+    .catch(err => next(err));
+});
+
+// @route GET api/bills/metrics
+// @desc Get Bills
+router.get('/metrics', passport.authenticate('jwt', {session: false}), function(request, response, next) {
+  let userId = ''
+
+  if (request.user) {
+    userId = request.user.id
+  }
+
+  BillsController.getMetrics(userId)
+    .then(bills => response.json(bills))
     .catch(err => next(err));
 });
 

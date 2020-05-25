@@ -11,7 +11,7 @@ const BillSchema = new Schema({
     required: true
   },
   items: [{
-    itemId:{
+    _id:{
         type: Schema.ObjectId,
         ref: 'products'
       },

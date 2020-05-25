@@ -7,7 +7,7 @@ export const actionTypes = {
   SET_SELECTED_BILL_ITEMS: 'SET_SELECTED_BILL_ITEMS',
   CLEAR_STATE: 'CLEAR_STATE',
   SET_VALIDATION_ERROR: 'SET_VALIDATION_ERROR',
-  SET_LINE_CHART_DATA: 'SET_LINE_CHART_DATA',
+  SET_METRICS: 'SET_METRICS',
 };
 
 
@@ -16,6 +16,7 @@ export function addProduct(payload) {
     _id: payload.item._id,
     name: payload.item.name,
     brand: payload.item.brand,
+    category: payload.item.category,
     detail: payload.item.detail,
     price: payload.price,
     quantity: payload.quantity
@@ -33,6 +34,7 @@ export function createProduct(data) {
       let product = {
         name: data.item,
         brand: data.brand,
+        category: data.category,
         detail: data.detail
       }
 
@@ -74,6 +76,7 @@ export function setProducts(payload) {
 
 
 export function createBill(payload) {
+  console.log(payload);
   return async dispatch => {
     try{
       await axios.post('/api/bills/create', payload).then(res => {
@@ -90,7 +93,7 @@ export function getBills() {
   return async dispatch => {
     try{
       await axios.get('/api/bills').then(bills =>
-        dispatch(setBills(bills.data))
+        dispatch(manageBills(bills.data))
       )
     }catch(err){
       console.log(err);
@@ -99,53 +102,103 @@ export function getBills() {
 }
 
 
-export function setBillTotalsByPeriod(bills){
-  //hacer un loop sobre los bills
-  //ver de que mes es el bill
-  let months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
-  let currentMonth = new Date
-  console.log(currentMonth);
-  currentMonth = currentMonth.getMonth()
-  let periods = []
-  bills.forEach((bill, i) => {
-    let date = new Date(bill.date)
-    let billMonth = date.getMonth()
-
-    //Get bill total and assign it to its month
-    periods[billMonth] =
-    bill.items.length === 1?
-      Number(bill.items[0].price) :
-      bill.items.reduce((accumulator, current, index) => {
-        accumulator = index <= 1? Number(accumulator.price) : accumulator
-         return accumulator + Number(current.price)
-      })
-  })
-  let data = {
-    labels: months.filter((m, i) => i <= currentMonth),
-    datasets: [
-      {
-        label: 'Total Mercado',
-        data:periods,
-        backgroundColor: 'rgba(173, 200, 37, 0.4)',
-        borderColor: 'rgba(173, 200, 37, 1)'
-      }
-    ]
+export function manageBills(payload) {
+  return async (dispatch, getState) => {
+    dispatch(getMetrics(payload))
+    dispatch(setBills(payload))
   }
+}
+
+
+function getLineChartData(data){
+    let months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+    let currentMonth = new Date()
+    currentMonth = currentMonth.getMonth()
+    let periods = []
+    data.forEach((m, i) => {
+      let month = m._id
+      periods[month - 1] = m.totalAmount
+    })
+    let lineData = {
+      labels: months.filter((m, i) => i <= currentMonth),
+      datasets: [
+        {
+          label: 'Total Mercado',
+          data:periods,
+          backgroundColor: 'rgba(173, 200, 37, 0.4)',
+          borderColor: 'rgba(173, 200, 37, 1)'
+        }
+      ]
+    }
+    return lineData
+}
+
+
+function getDoughnutChartData(data){
+    let doughnutData = {
+      labels: data.map((l, i) => l._id),
+      datasets: [
+        {
+          label: 'Categorias',
+          data: data.map((d, i) => d.total),
+          backgroundColor: [
+            'rgba(59, 41, 152, 0.7)', //primary
+            'rgba(139, 62, 223, 0.7)', //secondary
+            'rgba(173, 200, 37, 0.7)', //callToAction
+            'rgba(255, 59, 94, 0.7)',//red
+            'rgba(0, 102, 177, 0.7)', //blue
+            'rgba(3, 170, 155, 0.7)', //light-blue
+            'rgba(235, 181, 45, 0.7)',//yellow
+            'rgba(203, 200, 200, 0.7)', // grey
+          ],
+          borderColor: [
+            'rgba(59, 41, 152, 1)', //primary
+            'rgba(139, 62, 223, 1)', //secondary
+            'rgba(173, 200, 37, 1)', //callToAction
+            'rgba(255, 59, 94, 1)',//red
+            'rgba(0, 102, 177, 1)', //blue
+            'rgba(3, 170, 155, 1)', //light-blue
+            'rgba(235, 181, 45, 1)',//yellow
+            'rgba(203, 200, 200, 1)', // grey
+          ]
+        }
+      ]
+    }
+    return doughnutData
+}
+
+
+export function getMetrics(){
+  return async dispatch => {
+    try{
+      await axios.get('/api/bills/metrics').then(async bills => {
+        console.log(bills)
+        const { data } = bills
+        const lineData = await getLineChartData(data[0])
+        const doughnutData = await getDoughnutChartData(data[1])
+        const metrics = {lineData, doughnutData}
+        dispatch(setMetrics(metrics))
+        }
+      )
+    }catch(err){
+      console.log(err);
+    }
+  }
+}
+
+
+export function setMetrics(metrics) {
   return {
-    type: actionTypes.SET_LINE_CHART_DATA,
-    payload: data
+    type: actionTypes.SET_METRICS,
+    payload: metrics
   }
-
 }
 
 
 export function setBills(payload) {
-  return async dispatch => {
-    dispatch(setBillTotalsByPeriod(payload))
-    return {
-      type: actionTypes.SET_BILLS,
-      payload
-    }
+  return {
+    type: actionTypes.SET_BILLS,
+    payload
   }
 }
 

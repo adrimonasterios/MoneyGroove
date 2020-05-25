@@ -6,7 +6,8 @@ export const initialState = {
     savedProducts: [],
     bills: [],
     error: '',
-    lineChartData: {}
+    lineChartData: {},
+    doughnutChartData: {}
 };
 
 export function groceriesReducer(state = initialState, action) {
@@ -26,10 +27,11 @@ export function groceriesReducer(state = initialState, action) {
         ...state,
         bills: action.payload
       }
-    case actionTypes.SET_LINE_CHART_DATA:
+    case actionTypes.SET_METRICS:
       return {
         ...state,
-        lineChartData: action.payload
+        lineChartData: action.payload.lineData,
+        doughnutChartData: action.payload.doughnutData
       }
     case actionTypes.SET_SELECTED_BILL_ITEMS:
       return {

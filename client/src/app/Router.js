@@ -22,6 +22,7 @@ const styles = theme => ({
     height: "100%",
     fontFamily: theme.typography.fontFamily,
     color: theme.palette.text.primary,
+    boxSizing: 'border-box'
   }
 });
 

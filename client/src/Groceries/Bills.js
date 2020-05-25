@@ -7,6 +7,8 @@ import ItemForm from './components/ItemForm.js'
 import Bill from './components/Bill.js'
 import Placeholder from '../Utils/Placeholder.js'
 
+import { createMuiTheme } from "@material-ui/core";
+import { ThemeProvider } from "@material-ui/styles";
 import { withStyles } from '@material-ui/styles';
 import { lighten } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
@@ -14,17 +16,39 @@ import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Button from '@material-ui/core/Button';
 import DateFnsUtils from '@date-io/date-fns';
+import Grid from '@material-ui/core/Grid';
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
 } from '@material-ui/pickers';
+
+const datePickerTheme = createMuiTheme({
+  overrides: {
+    MuiPickersBasePicker: {
+        pickerView: {
+          backgroundColor: 'white'
+        }
+    },
+    MuiPickersDay: {
+      daySelected: {
+        backgroundColor: 'rgba(59, 41, 152, 1)',
+      },
+      dayDisabled: {
+        color: 'grey',
+      },
+      current: {
+        color: 'grey',
+      },
+    }
+  }
+})
 
 
 const styles = theme => ({
   root: {
     width: '90%',
     fontFamily: theme.typography.fontFamily,
-    padding: "2%",
+    padding: "1em",
     backgroundColor: theme.palette.background
   },
   groceries: {
@@ -175,15 +199,16 @@ class Bills extends React.Component{
     if(Object.keys(products).length){
       if(this.state.newBillForm) this.setState({newBillForm: false})
       //find out which products does the bill have and populate each bill item with the product information (avoid loop within loop)
-      const billItemsIds = bill.items.map(i => i.itemId)
+      const billItemsIds = bill.items.map(i => i._id)
       let billItems = {}
       products.filter(p => billItemsIds.includes(p._id)).forEach(p => billItems[p._id] = p)
       let items = bill.items.map(i => {
         let item = {
-          _id: i.itemId,
-          name: billItems[i.itemId].name,
-          brand: billItems[i.itemId].brand,
-          detail: billItems[i.itemId].detail,
+          _id: i._id,
+          name: billItems[i._id].name,
+          brand: billItems[i._id].brand,
+          category: billItems[i._id].category,
+          detail: billItems[i._id].detail,
           price: i.price,
           quantity: i.quantity
         }
@@ -230,13 +255,13 @@ class Bills extends React.Component{
     const { store, selectedDate: date, selectedBill, newBillForm }  = this.state
     let storeItems = items.map(i => {
       return {
-        itemId: i._id,
+        _id: i._id,
         quantity: i.quantity,
         price: i.price
       }
     })
     let isValid = this.saveBillValidation(store, date, storeItems)
-    if(!isValid) return
+    if(!Object.keys(selectedBill).length && !isValid) return
     if(Object.keys(selectedBill).length){
       const updatedBill = Object.assign({}, selectedBill);
       updatedBill.items = storeItems
@@ -339,20 +364,22 @@ class Bills extends React.Component{
                                                             label="Mercado"
                                                             />}
                         />
-                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                      <KeyboardDatePicker
-                        disableToolbar
-                        variant="inline"
-                        format="MM/dd/yyyy"
-                        margin="normal"
-                        id="date-picker-inline"
-                        label="Fecha de compra"
-                        value={selectedDate}
-                        onChange={this.handleDateChange}
-                        KeyboardButtonProps={{
-                          'aria-label': 'change date',
-                        }}
-                        />
+                      <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                        <ThemeProvider theme={datePickerTheme}>
+                          <KeyboardDatePicker
+                            disableToolbar
+                            variant="inline"
+                            format="MM/dd/yyyy"
+                            margin="normal"
+                            id="date-picker-inline"
+                            label="Fecha de compra"
+                            value={selectedDate}
+                            onChange={this.handleDateChange}
+                            KeyboardButtonProps={{
+                              'aria-label': 'change date',
+                            }}
+                            />
+                        </ThemeProvider>
                     </MuiPickersUtilsProvider>
                   </div>
                   :
