@@ -172,7 +172,7 @@ class Groceries extends React.Component{
             <div className={classes.bills}>
               <Link to="/compras" className={classes.link}>COMPRAS</Link>
               <div className={classes.billsList}>
-                {groceries.bills.reverse().filter((bill, i) => i <= 5).map((bill, i) =>
+                {groceries.bills.reverse().filter((bill, i) => i <= 4).map((bill, i) =>
                   <Paper
                     key={i}
                     className={classes.savedBill}
