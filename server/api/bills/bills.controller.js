@@ -4,9 +4,7 @@ const Bill = require("./Bill");
 class BillsController {
   async create(data) {
     try {
-      console.log(JSON.stringify(data));
       const created = await Bill.create(data);
-      console.log(JSON.stringify(created));
       return created;
     } catch (err) {
       console.log(`Error while creating Bills: ${err}`);
@@ -16,7 +14,7 @@ class BillsController {
 
   async getAll(userId) {
     try {
-      const bills = await Bill.find({userId});
+      const bills = await Bill.find({userId}).sort({date: 'desc'});
       return bills;
     } catch (err) {
       console.log(`Error while getting Billss: ${err}`);

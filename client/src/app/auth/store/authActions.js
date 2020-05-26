@@ -11,8 +11,6 @@ export const actionTypes = {
 
 // Register User
 export const registerUser = (userData, history) => dispatch => {
-  console.log('register');
-  console.log(userData);
   axios
     .post("/api/users/register", userData)
     .then(res => dispatch(loginUser({email: res.data.email, password: userData.password}, history))) // re-direct to login on successful register
@@ -27,8 +25,6 @@ export const registerUser = (userData, history) => dispatch => {
 
 // Login
 export const loginUser = (userData, history) => dispatch => {
-  console.log('login');
-  console.log(userData);
   // Get user token
   axios
     .post("/api/users/login", userData)
@@ -41,7 +37,6 @@ export const loginUser = (userData, history) => dispatch => {
       // Decode token to get user data
       const decoded = jwt_decode(token);
       // Set current user
-      console.log('logged');
       dispatch(setCurrentUser(decoded))
       history.push('/dashboard')
       window.location.reload();

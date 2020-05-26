@@ -1,4 +1,5 @@
 import React from 'react';
+import { withRouter } from "react-router-dom";
 import { connect } from 'react-redux';
 import * as groceriesActions from './store/groceriesActions';
 import * as helperFunctions from '../app/helpers.js';
@@ -173,6 +174,10 @@ class Bills extends React.Component{
   }
 
   async componentDidMount(){
+    let bill = {}
+    console.log('again');
+    if(this.props.location.state && 'bill' in this.props.location.state) bill = this.props.location.state.bill
+    if(bill) this.selectBill(bill)
     this.props.getProducts()
     this.props.getBills()
   }
@@ -224,7 +229,7 @@ class Bills extends React.Component{
   }
 
   openNewBillForm(){
-    this.props.clearState(['items'])
+    this.props.clearState({items: []})
     this.setState({newBillForm: true, selectedBill: {}})
   }
 
@@ -429,4 +434,4 @@ const mapDispatchToProps = {
   setValidationError: groceriesActions.setValidationError,
 }
 
-export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(Bills));
+export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(withRouter(Bills)));

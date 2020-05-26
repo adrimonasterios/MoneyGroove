@@ -76,7 +76,6 @@ export function setProducts(payload) {
 
 
 export function createBill(payload) {
-  console.log(payload);
   return async dispatch => {
     try{
       await axios.post('/api/bills/create', payload).then(res => {
@@ -172,7 +171,6 @@ export function getMetrics(){
   return async dispatch => {
     try{
       await axios.get('/api/bills/metrics').then(async bills => {
-        console.log(bills)
         const { data } = bills
         const lineData = await getLineChartData(data[0])
         const doughnutData = await getDoughnutChartData(data[1])

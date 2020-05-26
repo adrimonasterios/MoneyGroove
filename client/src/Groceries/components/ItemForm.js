@@ -126,9 +126,6 @@ function ItemForm (props) {
   });
 
   const handleChange = (value, field, action) => {
-    console.log(value);
-    console.log(field);
-    console.log(action);
     action === "create"?
       createProduct({ ...newProduct, [field]: value }):
       addProduct({ ...selectedProduct, [field]: value })

@@ -1,13 +1,14 @@
 import React from 'react';
+import { withRouter } from "react-router-dom";
 import { connect } from 'react-redux';
 import { Line, Doughnut } from 'react-chartjs-2';
 import { Link } from 'react-router-dom'
 import * as groceriesActions from './store/groceriesActions';
 import * as helperFunctions from '../app/helpers.js';
 
-// import { Line } from 'react-chartjs-2';
-
 import { withStyles } from '@material-ui/styles';
+import { lighten } from '@material-ui/core/styles';
+import Paper from '@material-ui/core/Paper';
 
 
 const styles = theme => ({
@@ -70,13 +71,42 @@ const styles = theme => ({
     justifyContent: 'space-between',
     alignItems: 'center'
   },
+  billsList:{
+    width: '80%',
+    height: '100%',
+    paddingTop: '2em'
+  },
+  savedBill: {
+    padding: '3%',
+    marginBottom: '1em',
+    color: theme.palette.text.secondary,
+    display: 'flex',
+    justifyContent: 'space-between',
+    transition: '0.3',
+    cursor: "pointer",
+    width: '100%',
+    "&:hover":{
+      backgroundColor: lighten(theme.palette.primary.light, 0.9),
+      color: theme.palette.primary.main
+    }
+  },
+  link:{
+    color: theme.palette.text.disabled,
+    textDecoration: 'none',
+    "&:hover":{
+      color: theme.palette.text.secondary
+    },
+    "&:visited":{
+      color: theme.palette.text.disabled
+    }
+  }
 });
 
 class Groceries extends React.Component{
   constructor(){
     super();
     this.state = {
-      period: 'month',
+
     }
   }
 
@@ -84,9 +114,17 @@ class Groceries extends React.Component{
     this.props.getBills()
   }
 
+  goToBill(bill){
+    this.props.history.push({
+      pathname: '/compras',
+      state: { bill }
+    })
+  }
+
   render(){
     const { classes, groceries } = this.props
-    const { period, chartData } = this.state
+    const { selectedBill } = this.state
+    console.log(groceries);
 
     return(
       <div className={classes.root}>
@@ -132,7 +170,20 @@ class Groceries extends React.Component{
 
           <div className={classes.sections}>
             <div className={classes.bills}>
-              <Link to="/compras">COMPRAS</Link>
+              <Link to="/compras" className={classes.link}>COMPRAS</Link>
+              <div className={classes.billsList}>
+                {groceries.bills.reverse().filter((bill, i) => i <= 5).map((bill, i) =>
+                  <Paper
+                    key={i}
+                    className={classes.savedBill}
+                    onClick={e => this.goToBill(bill)}
+                    >
+                    <span style={{marginRight: '1em'}}>{bill.store}</span>
+                    <span>{helperFunctions.formatDate(bill.date)}</span>
+                  </Paper>
+                )
+              }
+              </div>
             </div>
             <div className={classes.bills}>
               PRODUCTOS
@@ -157,7 +208,7 @@ const mapDispatchToProps = {
   clearState: groceriesActions.clearState,
 }
 
-export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(Groceries));
+export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(withRouter(Groceries)));
 
 // title:{
 //   display: true,
