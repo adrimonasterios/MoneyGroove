@@ -30,13 +30,17 @@ const styles = theme => ({
     height: '49%',
     width: '100%'
   },
-  chart: {
+  chartContainer: {
     height: '100%',
     width: '49.5%',
     borderRadius: '4px',
     boxShadow: '0 2px 4px 0 #c5c5e2;',
     backgroundColor: '#fff',
     padding: '2% 2% 3% 2%',
+  },
+  chart: {
+    height: '85%',
+    width: '100%',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
@@ -44,7 +48,9 @@ const styles = theme => ({
   },
   chartTitle: {
     color: theme.palette.text.disabled,
-    fontSize: '18px'
+    fontSize: '18px',
+    textAlign: 'center',
+    marginTop: 0
   },
   sections: {
     display: 'flex',
@@ -81,42 +87,46 @@ class Groceries extends React.Component{
   render(){
     const { classes, groceries } = this.props
     const { period, chartData } = this.state
-    console.log(groceries.doughnutChartData);
 
     return(
       <div className={classes.root}>
         <div className={classes.groceries}>
           <div className={classes.charts}>
-            <div className={classes.chart}>
+            <div className={classes.chartContainer}>
               <p className={classes.chartTitle}>MONTO DE COMPRAS POR MES</p>
-              {Object.keys(groceries.lineChartData).length?
-                <Line
-                  data={groceries.lineChartData}
-                  options={{
-                    responsive: true,
-                    legend: {
-                      display: false
-                    }
-                  }}
-                  />:
-                  ''
-                }
-
+              <div className={classes.chart}>
+                {Object.keys(groceries.lineChartData).length?
+                  <Line
+                    data={groceries.lineChartData}
+                    options={{
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      legend: {
+                        display: false
+                      }
+                    }}
+                    />:
+                    ''
+                  }
+              </div>
             </div>
-            <div className={classes.chart}>
+            <div className={classes.chartContainer}>
               <p className={classes.chartTitle}>GASTO POR CATEGORIAS</p>
-              {Object.keys(groceries.doughnutChartData).length?
-                <Doughnut
-                  data={groceries.doughnutChartData}
-                  options={{
-                    responsive: true,
-                    legend: {
-                      position: 'right'
-                    }
-                  }}
-                  />:
-                  ''
-                }
+              <div className={classes.chart}>
+                {Object.keys(groceries.doughnutChartData).length?
+                  <Doughnut
+                    data={groceries.doughnutChartData}
+                    options={{
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      legend: {
+                        position: 'right'
+                      }
+                    }}
+                    />:
+                    ''
+                  }
+              </div>
             </div>
           </div>
 
@@ -148,3 +158,10 @@ const mapDispatchToProps = {
 }
 
 export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(Groceries));
+
+// title:{
+//   display: true,
+//   text: 'MONTO DE COMPRAS POR MES',
+//   fontSize: '18',
+//   fontColor: 'rgba(0, 0, 0, 0.38)'
+// },
