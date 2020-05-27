@@ -8,6 +8,7 @@ export const actionTypes = {
   CLEAR_STATE: 'CLEAR_STATE',
   SET_VALIDATION_ERROR: 'SET_VALIDATION_ERROR',
   SET_METRICS: 'SET_METRICS',
+  SET_ITEMS_TO_SHOP: 'SET_ITEMS_TO_SHOP',
 };
 
 
@@ -259,4 +260,26 @@ export function setValidationError(payload) {
     type: actionTypes.SET_VALIDATION_ERROR,
     payload
    }
+}
+
+
+export function getShoppingListData(payload) {
+  return async dispatch => {
+    try{
+      await axios.get(`/api/bills/shoppingList`).then(res => {
+        console.log(res);
+        dispatch(setItemsToShop())
+      })
+    }catch(err){
+      console.log(err);
+    }
+  }
+}
+
+
+export function setItemsToShop(payload) {
+  return {
+    type: actionTypes.SET_ITEMS_TO_SHOP,
+    payload
+  }
 }

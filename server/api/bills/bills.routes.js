@@ -48,6 +48,20 @@ router.get('/metrics', passport.authenticate('jwt', {session: false}), function(
     .catch(err => next(err));
 });
 
+// @route GET api/bills/shoppingList
+// @desc Get shopping list items
+router.get('/shoppingList', passport.authenticate('jwt', {session: false}), function(request, response, next) {
+  let userId = ''
+
+  if (request.user) {
+    userId = request.user.id
+  }
+
+  BillsController.getShoppingListData(userId)
+    .then(data => response.json(data))
+    .catch(err => next(err));
+});
+
 // @route PUT api/bills/:id
 // @desc Update Bill
 router.put('/:id', passport.authenticate('jwt', {session: false}), function(request, response, next) {

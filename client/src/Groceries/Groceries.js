@@ -93,6 +93,7 @@ const styles = theme => ({
   link:{
     color: theme.palette.text.disabled,
     textDecoration: 'none',
+    fontSize: '18px',
     "&:hover":{
       color: theme.palette.text.secondary
     },
@@ -189,7 +190,7 @@ class Groceries extends React.Component{
               PRODUCTOS
             </div>
             <div className={classes.bills}>
-              PROXIMA LISTA
+              <Link to="/proxima-compra" className={classes.link}>PROXIMA COMPRA</Link>
             </div>
           </div>
         </div>

@@ -43,6 +43,11 @@ export function groceriesReducer(state = initialState, action) {
         ...state,
         error: action.payload
       }
+    case actionTypes.SET_ITEMS_TO_SHOP:
+      return {
+        ...state,
+        itemsToShop: action.payload
+      }
     case actionTypes.CLEAR_STATE:
       let keysToClear = action.payload
       let clearedState = {...state}

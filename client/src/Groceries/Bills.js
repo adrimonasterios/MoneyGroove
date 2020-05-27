@@ -54,15 +54,16 @@ const styles = theme => ({
   },
   groceries: {
     display: 'flex',
-    borderRadius: '4px',
-    boxShadow: '0 2px 4px 0 #c5c5e2;',
-    backgroundColor: '#fff',
+    justifyContent: 'space-between',
     height: '100%',
     width: '100%'
   },
   bills: {
     width: '30%',
-    padding:'16px 24px'
+    padding:'16px 24px',
+    borderRadius: '4px',
+    boxShadow: '0 2px 4px 0 #c5c5e2;',
+    backgroundColor: '#fff',
   },
   billsList: {
     height: '80%',
@@ -70,9 +71,12 @@ const styles = theme => ({
     overflow: 'scroll'
   },
   billContainer: {
-    width: '70%',
+    width: '69.5%',
     padding:'16px 24px',
-    borderLeft: "1px #eaeaea solid"
+    borderLeft: "1px #eaeaea solid",
+    borderRadius: '4px',
+    boxShadow: '0 2px 4px 0 #c5c5e2;',
+    backgroundColor: '#fff',
   },
   title: {
     display: 'flex',
@@ -175,9 +179,8 @@ class Bills extends React.Component{
 
   async componentDidMount(){
     let bill = {}
-    console.log('again');
     if(this.props.location.state && 'bill' in this.props.location.state) bill = this.props.location.state.bill
-    if(bill) this.selectBill(bill)
+    if(Object.keys(bill).length) this.selectBill(bill)
     this.props.getProducts()
     this.props.getBills()
   }
