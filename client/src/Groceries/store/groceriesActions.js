@@ -267,8 +267,7 @@ export function getShoppingListData(payload) {
   return async dispatch => {
     try{
       await axios.get(`/api/bills/shoppingList`).then(res => {
-        console.log(res);
-        dispatch(setItemsToShop())
+        dispatch(setItemsToShop(res.data))
       })
     }catch(err){
       console.log(err);

@@ -7,7 +7,8 @@ export const initialState = {
     bills: [],
     error: '',
     lineChartData: {},
-    doughnutChartData: {}
+    doughnutChartData: {},
+    itemsToShop:[]
 };
 
 export function groceriesReducer(state = initialState, action) {

@@ -16,6 +16,9 @@ import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import DeleteIcon from '@material-ui/icons/Delete';
+import AddIcon from '@material-ui/icons/AddCircle';
+
+import * as helperFunctions from '../app/helpers.js';
 
 
 function descendingComparator(a, b, orderBy) {
@@ -44,13 +47,6 @@ function stableSort(array, comparator) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-const headCells = [
-  { id: 'name', numeric: false, disablePadding: true, label: 'Item' },
-  { id: 'brand', numeric: true, disablePadding: false, label: 'Marca' },
-  { id: 'quantity', numeric: true, disablePadding: false, label: 'Cantidad' },
-  { id: 'detail', numeric: true, disablePadding: false, label: 'Detalle' },
-  { id: 'price', numeric: true, disablePadding: false, label: 'Precio' },
-];
 
 function EnhancedTableHead(props) {
   const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
@@ -69,7 +65,7 @@ function EnhancedTableHead(props) {
             inputProps={{ 'aria-label': 'select all desserts' }}
           />
         </TableCell>
-        {headCells.map((headCell) => (
+        {props.headCells.map((headCell) => (
           <TableCell
             style={{background: 'white', borderCollapse: 'collapse'}}
             key={headCell.id}
@@ -130,7 +126,7 @@ const useToolbarStyles = makeStyles((theme) => ({
 
 const EnhancedTableToolbar = (props) => {
   const classes = useToolbarStyles();
-  const { numSelected } = props;
+  const { numSelected, header, icons } = props;
 
   return (
     <Toolbar
@@ -140,28 +136,47 @@ const EnhancedTableToolbar = (props) => {
     >
       {numSelected > 0 ? (
         <Typography className={classes.title} color="inherit" variant="subtitle1" component="div">
-          {numSelected} selected
+          {numSelected > 1? `${numSelected} seleccionados` : `${numSelected} seleccionado`}
         </Typography>
       ) : (
         <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
-          Compra
+          {header}
         </Typography>
       )}
 
       {numSelected > 0 && (
-        <Tooltip title="Delete">
-          <IconButton
-            aria-label="delete"
-            onClick={(e) => {
-              props.removeSelectedItems(props.selected, props.items)
-              props.setSelected([])
-            }}
-            >
-            <DeleteIcon
-              style={{color: "#ff3b5e"}}
-              />
-          </IconButton>
-        </Tooltip>
+        <div>
+          {'delete' in icons && (
+            <Tooltip title="Delete">
+              <IconButton
+                aria-label="delete"
+                onClick={(e) => {
+                  icons.delete.function1(props.selected, props.items)
+                  props.setSelected([])
+                }}
+                >
+                <DeleteIcon
+                  style={{color: "#ff3b5e"}}
+                  />
+              </IconButton>
+            </Tooltip>
+          )}
+          {'add' in icons && (
+            <Tooltip title="Add">
+              <IconButton
+                aria-label="add"
+                onClick={(e) => {
+                  icons.add.function1(props.selected)
+                  props.setSelected([])
+                }}
+                >
+                <AddIcon
+                  style={{color: "green"}}
+                  />
+              </IconButton>
+            </Tooltip>
+          )}
+        </div>
       )}
     </Toolbar>
   );
@@ -181,12 +196,6 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(2),
     overflow: 'hidden'
   },
-  smallContainer: {
-    maxHeight: 350,
-  },
-  bigContainer: {
-    maxHeight: 460,
-  },
   table: {
     minWidth: 400,
     borderCollapse: 'collapse'
@@ -202,13 +211,17 @@ const useStyles = makeStyles((theme) => ({
     top: 20,
     width: 1,
   },
+  priority: {
+    display: 'flex',
+    justifyContent: 'center'
+  }
 }));
 
 export default function Bill(props) {
   const classes = useStyles();
   let { items } = props
-  const [order, setOrder] = React.useState('asc');
-  const [orderBy, setOrderBy] = React.useState('calories');
+  const [order, setOrder] = React.useState(props.orderType);
+  const [orderBy, setOrderBy] = React.useState(props.orderBy);
   const [selected, setSelected] = React.useState([]);
 
   const handleRequestSort = (event, property) => {
@@ -246,6 +259,77 @@ export default function Bill(props) {
     setSelected(newSelected);
   };
 
+  const getCells = (row, labelId, isItemSelected) => {
+    switch(props.cells){
+      case 'shopping':
+        if(!props.shoppingList.includes(row)){
+          return (
+            <TableRow
+              hover
+              onClick={(event) => handleClick(event, row._id)}
+              role="checkbox"
+              aria-checked={isItemSelected}
+              tabIndex={-1}
+              key={row._id}
+              selected={isItemSelected}
+              >
+              <TableCell padding="checkbox">
+                <Checkbox
+                  checked={isItemSelected}
+                  inputProps={{ 'aria-labelledby': labelId }}
+                  />
+              </TableCell>
+              <TableCell component="th" id={labelId} scope="row" padding="none">
+                {row.name}
+              </TableCell>
+              <TableCell align="right">{row.detail}</TableCell>
+              <TableCell align="right">{`${row.daysBetweenPurchases} Dias`}</TableCell>
+              <TableCell align="right">{helperFunctions.formatDate(row.lastPurchase)}</TableCell>
+              <TableCell align="right"
+                        style={!row.daysBetweenPurchases?
+                                  {color: 'grey', textDecoration: 'line-through'}:
+                                  row.priority < 7?
+                                    {color: 'red'}:
+                                    row.priority > 14?
+                                      {color: 'green'} : {color: 'grey'}}
+                  >
+                    {`${row.priority} Dias`}
+                </TableCell>
+              </TableRow>
+            )
+        }
+        break;
+      case 'bill':
+        return (
+          <TableRow
+            hover
+            onClick={(event) => handleClick(event, row._id)}
+            role="checkbox"
+            aria-checked={isItemSelected}
+            tabIndex={-1}
+            key={row._id}
+            selected={isItemSelected}
+            >
+            <TableCell padding="checkbox">
+              <Checkbox
+                checked={isItemSelected}
+                inputProps={{ 'aria-labelledby': labelId }}
+                />
+            </TableCell>
+            <TableCell component="th" id={labelId} scope="row" padding="none">
+              {row.name}
+            </TableCell>
+            <TableCell align="right">{row.brand}</TableCell>
+            <TableCell align="right">{row.detail}</TableCell>
+            <TableCell align="right">{row.quantity}</TableCell>
+            <TableCell align="right">{helperFunctions.formatAmount(row.price)}</TableCell>
+          </TableRow>
+        )
+      default:
+        console.log('no cells');
+    }
+  };
+
   const isSelected = (id) => selected.indexOf(id) !== -1;
 
   return (
@@ -253,12 +337,13 @@ export default function Bill(props) {
       <Paper className={classes.paper}>
         <EnhancedTableToolbar
           numSelected={selected.length}
-          removeSelectedItems={props.removeBillItems}
           selected={selected}
           setSelected={setSelected}
           items={items}
+          header={props.header}
+          icons={props.icons}
           />
-        <TableContainer className={props.size === 'big'? classes.bigContainer: classes.smallContainer}>
+        <TableContainer style={{maxHeight: props.size}}>
           <Table
             stickyHeader
             className={classes.table}
@@ -274,6 +359,7 @@ export default function Bill(props) {
               onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
               rowCount={items.length}
+              headCells = {props.headCells}
             />
             <TableBody>
               {stableSort(items, getComparator(order, orderBy))
@@ -281,31 +367,7 @@ export default function Bill(props) {
                   const isItemSelected = isSelected(row._id);
                   const labelId = `enhanced-table-checkbox-${index}`;
 
-                  return (
-                    <TableRow
-                      hover
-                      onClick={(event) => handleClick(event, row._id)}
-                      role="checkbox"
-                      aria-checked={isItemSelected}
-                      tabIndex={-1}
-                      key={row._id}
-                      selected={isItemSelected}
-                    >
-                      <TableCell padding="checkbox">
-                        <Checkbox
-                          checked={isItemSelected}
-                          inputProps={{ 'aria-labelledby': labelId }}
-                        />
-                      </TableCell>
-                      <TableCell component="th" id={labelId} scope="row" padding="none">
-                        {row.name}
-                      </TableCell>
-                      <TableCell align="right">{row.brand}</TableCell>
-                      <TableCell align="right">{row.quantity}</TableCell>
-                      <TableCell align="right">{row.detail}</TableCell>
-                      <TableCell align="right">{props.formatAmount(row.price)}</TableCell>
-                    </TableRow>
-                  );
+                  return getCells(row, labelId, isItemSelected)
                 })}
             </TableBody>
           </Table>

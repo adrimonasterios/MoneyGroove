@@ -5,7 +5,7 @@ import * as groceriesActions from './store/groceriesActions';
 import * as helperFunctions from '../app/helpers.js';
 
 import ItemForm from './components/ItemForm.js'
-import Bill from './components/Bill.js'
+import Table from '../Utils/Table.js'
 import Placeholder from '../Utils/Placeholder.js'
 
 import { createMuiTheme } from "@material-ui/core";
@@ -22,6 +22,15 @@ import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
 } from '@material-ui/pickers';
+
+
+const billHeadCells = [
+  { id: 'name', numeric: false, disablePadding: true, label: 'Item', format: false},
+  { id: 'brand', numeric: true, disablePadding: false, label: 'Marca', format: false},
+  { id: 'quantity', numeric: true, disablePadding: false, label: 'Cantidad', format: false},
+  { id: 'detail', numeric: true, disablePadding: false, label: 'Detalle', format: false},
+  { id: 'price', numeric: true, disablePadding: false, label: 'Precio', format: helperFunctions.formatAmount},
+]
 
 const datePickerTheme = createMuiTheme({
   overrides: {
@@ -201,8 +210,10 @@ class Bills extends React.Component{
   }
 
   selectBill(bill){
-    const { savedProducts : products } = this.props.groceries
+    const { savedProducts : products, error } = this.props.groceries
     this.setState({selectedBill: bill})
+
+    if(error) this.props.setValidationError('')
 
     if(Object.keys(products).length){
       if(this.state.newBillForm) this.setState({newBillForm: false})
@@ -232,6 +243,7 @@ class Bills extends React.Component{
   }
 
   openNewBillForm(){
+    if(this.props.groceries.error) this.props.setValidationError('')
     this.props.clearState({items: []})
     this.setState({newBillForm: true, selectedBill: {}})
   }
@@ -399,11 +411,19 @@ class Bills extends React.Component{
                   setValidationError={this.props.setValidationError}
                   />
                 <p className={classes.error}>{groceries.error}</p>
-                <Bill
-                  size={ newBillForm ? 'small' : 'big'}
+                <Table
+                  size={ newBillForm ? 350 : 460}
+                  orderBy=''
+                  headCells={billHeadCells}
                   items={groceries.items}
-                  formatAmount={helperFunctions.formatAmount}
-                  removeBillItems={this.props.removeBillItems}
+                  header='Compra'
+                  cells="bill"
+                  icons={{
+                    delete:{
+                      show: true,
+                      function1: this.props.removeBillItems
+                    }
+                  }}
                   />
                 <h2 className={classes.total}>
                   Total:

@@ -126,6 +126,8 @@ class BillsController {
         const oneDay = 24 * 60 * 60 * 1000;
         let avgDiffDays = 0
         let sortedDates = product.datesPurchased.sort((a, b) => b - a)
+        const avgQuantity = product.quantities.reduce((a, b) => a + b, 0)/product.quantities.length
+
         function getDaysBetweenDates(a, b){
           return Math.round(Math.abs((a - b) / oneDay))
         }
@@ -137,20 +139,27 @@ class BillsController {
             let days = getDaysBetweenDates(date1, date2)
             daysBetweenDates.push(days)
           }
-          avgDiffDays = (daysBetweenDates.reduce((a, b) => a + b, 0)/daysBetweenDates.length)
+          avgDiffDays = (daysBetweenDates.reduce((a, b) => a + b, 0)/daysBetweenDates.length)/avgQuantity
         }
 
         function getStatus(){
+          if(avgDiffDays === 0) return 0
           let today = new Date()
           let daysBetweenTodayAndLastPurchase = getDaysBetweenDates(today, sortedDates[0])
-          if(daysBetweenTodayAndLastPurchase - avgDiffDays <= 0){
-            return 'high'
-          }else if(daysBetweenTodayAndLastPurchase - avgDiffDays <= 7){
-            return 'medium'
-          }else{
-            return 'low'
-          }
+          return avgDiffDays - daysBetweenTodayAndLastPurchase
         }
+        //
+        // function getStatus(){
+        //   let today = new Date()
+        //   let daysBetweenTodayAndLastPurchase = getDaysBetweenDates(today, sortedDates[0])
+        //   if(daysBetweenTodayAndLastPurchase - avgDiffDays <= 0){
+        //     return 3
+        //   }else if(daysBetweenTodayAndLastPurchase - avgDiffDays <= 7){
+        //     return 2
+        //   }else{
+        //     return 1
+        //   }
+        // }
 
 
         newProduct.cheapestStore = product.stores[cheapestIndex]
