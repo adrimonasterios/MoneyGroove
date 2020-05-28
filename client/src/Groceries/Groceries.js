@@ -100,6 +100,14 @@ const styles = theme => ({
     "&:visited":{
       color: theme.palette.text.disabled
     }
+  },
+  item: {
+    padding: '3%',
+    marginBottom: '1em',
+    color: theme.palette.text.secondary,
+    display: 'flex',
+    justifyContent: 'space-between',
+    width: '100%',
   }
 });
 
@@ -113,6 +121,7 @@ class Groceries extends React.Component{
 
   async componentDidMount(){
     this.props.getBills()
+    this.props.getShoppingListData()
   }
 
   goToBill(bill){
@@ -125,7 +134,6 @@ class Groceries extends React.Component{
   render(){
     const { classes, groceries } = this.props
     const { selectedBill } = this.state
-    console.log(groceries);
 
     return(
       <div className={classes.root}>
@@ -191,6 +199,25 @@ class Groceries extends React.Component{
             </div>
             <div className={classes.bills}>
               <Link to="/proxima-compra" className={classes.link}>PROXIMA COMPRA</Link>
+              <div className={classes.billsList}>
+                {groceries.itemsToShop.sort((a,b) => a.priority - b.priority).filter((item, i) => i <= 4).map((item, i) =>
+                  <Paper
+                    key={i}
+                    className={classes.item}
+                    style={!item.daysBetweenPurchases?
+                              {color: 'grey'}:
+                              item.priority < 7?
+                                {backgroundColor: 'rgba(255, 59, 94, 0.2)'}:
+                                item.priority > 14?
+                                  {backgroundColor: 'rgba(173, 200, 37, 0.2)'} : {color: 'grey'}}
+                    >
+                    <span style={{marginRight: '1em'}}>{`${item.name} (${item.detail})`}</span>
+                    <span>{item.daysBetweenPurchases? `${item.priority} Dias` : 'N/A'}
+                  </span>
+                  </Paper>
+                )
+              }
+              </div>
             </div>
           </div>
         </div>
@@ -207,6 +234,7 @@ const mapDispatchToProps = {
   getProducts: groceriesActions.getProducts,
   getBills: groceriesActions.getBills,
   clearState: groceriesActions.clearState,
+  getShoppingListData: groceriesActions.getShoppingListData,
 }
 
 export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(withRouter(Groceries)));
