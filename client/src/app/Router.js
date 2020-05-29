@@ -10,6 +10,7 @@ import Dashboard from '../Dashboard/Dashboard.js'
 import Groceries from '../Groceries/Groceries.js'
 import Bills from '../Groceries/Bills.js'
 import ShoppingList from '../Groceries/ShoppingList.js'
+import ProductManagement from '../Groceries/ProductManagement.js'
 import Navbar from '../Utils/Navbar.js'
 import Logout from '../Utils/Logout.js'
 import PrivateRoute from './auth/store/helpers/PrivateRoute.js'
@@ -78,6 +79,7 @@ class Routes extends React.Component{
           <PrivateRoute path="/mercado" component={Groceries}/>
           <PrivateRoute path="/compras" component={Bills}/>
           <PrivateRoute path="/proxima-compra" component={ShoppingList}/>
+          <PrivateRoute path="/administracion-de-productos" component={ProductManagement}/>
 
           <Route exact path="/home" component={Landing}/>
           <Route exact path="/logout" render={() => <Logout logoutUser={this.props.logoutUser}/>}/>

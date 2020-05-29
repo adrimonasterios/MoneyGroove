@@ -325,6 +325,33 @@ export default function Bill(props) {
             <TableCell align="right">{helperFunctions.formatAmount(row.price)}</TableCell>
           </TableRow>
         )
+      case 'management':
+        return (
+          <TableRow
+            hover
+            onClick={(event) => handleClick(event, row._id)}
+            role="checkbox"
+            aria-checked={isItemSelected}
+            tabIndex={-1}
+            key={row._id}
+            selected={isItemSelected}
+            >
+            <TableCell padding="checkbox">
+              <Checkbox
+                checked={isItemSelected}
+                inputProps={{ 'aria-labelledby': labelId }}
+                />
+            </TableCell>
+            <TableCell component="th" id={labelId} scope="row" padding="none">
+              {row.name}
+            </TableCell>
+            <TableCell align="right">{row.brand}</TableCell>
+            <TableCell align="right">{row.detail}</TableCell>
+            <TableCell align="right">{helperFunctions.formatAmount(String(row.cheapestPrice))}</TableCell>
+            <TableCell align="right">{row.cheapestStore}</TableCell>
+            <TableCell align="right">{row.bills.length}</TableCell>
+          </TableRow>
+        )
       default:
         console.log('no cells');
     }

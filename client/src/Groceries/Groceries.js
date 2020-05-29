@@ -59,7 +59,7 @@ const styles = theme => ({
     height: '49%',
     width: '100%'
   },
-  bills: {
+  billsAndProducts: {
     height: '100%',
     width: '32.5%',
     borderRadius: '4px',
@@ -72,6 +72,11 @@ const styles = theme => ({
     alignItems: 'center'
   },
   billsList:{
+    width: '80%',
+    height: '100%',
+    paddingTop: '2em'
+  },
+  productsList:{
     width: '80%',
     height: '100%',
     paddingTop: '2em'
@@ -108,6 +113,9 @@ const styles = theme => ({
     display: 'flex',
     justifyContent: 'space-between',
     width: '100%',
+  },
+  management: {
+    width: '33.5%'
   }
 });
 
@@ -178,7 +186,7 @@ class Groceries extends React.Component{
           </div>
 
           <div className={classes.sections}>
-            <div className={classes.bills}>
+            <div className={classes.billsAndProducts}>
               <Link to="/compras" className={classes.link}>COMPRAS</Link>
               <div className={classes.billsList}>
                 {groceries.bills.reverse().filter((bill, i) => i <= 4).map((bill, i) =>
@@ -194,12 +202,12 @@ class Groceries extends React.Component{
               }
               </div>
             </div>
-            <div className={classes.bills}>
-              PRODUCTOS
+            <div className={`${classes.billsAndProducts} ${classes.management}`}>
+              <Link to="/administracion-de-productos" className={classes.link}>ADMINISTRACION</Link>
             </div>
-            <div className={classes.bills}>
+            <div className={classes.billsAndProducts}>
               <Link to="/proxima-compra" className={classes.link}>PROXIMA COMPRA</Link>
-              <div className={classes.billsList}>
+              <div className={classes.productsList}>
                 {groceries.itemsToShop.sort((a,b) => a.priority - b.priority).filter((item, i) => i <= 4).map((item, i) =>
                   <Paper
                     key={i}
@@ -238,10 +246,3 @@ const mapDispatchToProps = {
 }
 
 export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(withRouter(Groceries)));
-
-// title:{
-//   display: true,
-//   text: 'MONTO DE COMPRAS POR MES',
-//   fontSize: '18',
-//   fontColor: 'rgba(0, 0, 0, 0.38)'
-// },

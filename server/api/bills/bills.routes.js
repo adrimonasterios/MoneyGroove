@@ -62,6 +62,20 @@ router.get('/shoppingList', passport.authenticate('jwt', {session: false}), func
     .catch(err => next(err));
 });
 
+// @route GET api/bills/management
+// @desc Get management items
+router.get('/management', passport.authenticate('jwt', {session: false}), function(request, response, next) {
+  let userId = ''
+
+  if (request.user) {
+    userId = request.user.id
+  }
+
+  BillsController.getManagementData(userId)
+    .then(data => response.json(data))
+    .catch(err => next(err));
+});
+
 // @route PUT api/bills/:id
 // @desc Update Bill
 router.put('/:id', passport.authenticate('jwt', {session: false}), function(request, response, next) {

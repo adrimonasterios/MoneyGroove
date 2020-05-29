@@ -9,6 +9,7 @@ export const actionTypes = {
   SET_VALIDATION_ERROR: 'SET_VALIDATION_ERROR',
   SET_METRICS: 'SET_METRICS',
   SET_ITEMS_TO_SHOP: 'SET_ITEMS_TO_SHOP',
+  SET_MANAGEMENT: 'SET_MANAGEMENT',
 };
 
 
@@ -279,6 +280,28 @@ export function getShoppingListData(payload) {
 export function setItemsToShop(payload) {
   return {
     type: actionTypes.SET_ITEMS_TO_SHOP,
+    payload
+  }
+}
+
+
+export function getManagementData(payload) {
+  return async dispatch => {
+    try{
+      await axios.get(`/api/bills/management`).then(res => {
+        console.log(res.data);
+        dispatch(setManagementItems(res.data))
+      })
+    }catch(err){
+      console.log(err);
+    }
+  }
+}
+
+
+export function setManagementItems(payload) {
+  return {
+    type: actionTypes.SET_MANAGEMENT,
     payload
   }
 }

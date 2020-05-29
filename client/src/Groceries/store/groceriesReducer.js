@@ -8,7 +8,8 @@ export const initialState = {
     error: '',
     lineChartData: {},
     doughnutChartData: {},
-    itemsToShop:[]
+    itemsToShop:[],
+    managementItems: []
 };
 
 export function groceriesReducer(state = initialState, action) {
@@ -48,6 +49,11 @@ export function groceriesReducer(state = initialState, action) {
       return {
         ...state,
         itemsToShop: action.payload
+      }
+    case actionTypes.SET_MANAGEMENT:
+      return {
+        ...state,
+        managementItems: action.payload
       }
     case actionTypes.CLEAR_STATE:
       let keysToClear = action.payload

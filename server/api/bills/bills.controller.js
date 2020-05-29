@@ -148,18 +148,6 @@ class BillsController {
           let daysBetweenTodayAndLastPurchase = getDaysBetweenDates(today, sortedDates[0])
           return avgDiffDays - daysBetweenTodayAndLastPurchase
         }
-        //
-        // function getStatus(){
-        //   let today = new Date()
-        //   let daysBetweenTodayAndLastPurchase = getDaysBetweenDates(today, sortedDates[0])
-        //   if(daysBetweenTodayAndLastPurchase - avgDiffDays <= 0){
-        //     return 3
-        //   }else if(daysBetweenTodayAndLastPurchase - avgDiffDays <= 7){
-        //     return 2
-        //   }else{
-        //     return 1
-        //   }
-        // }
 
 
         newProduct.cheapestStore = product.stores[cheapestIndex]
@@ -169,6 +157,62 @@ class BillsController {
         newProduct.priority = getStatus()
         return newProduct
       })
+      return adjustedData
+    } catch (err) {
+      console.log(`Error while getting Billss: ${err}`);
+      throw err;
+    }
+  }
+
+  async getManagementData(userId) {
+    try{
+      let shoppingListData = [
+        {
+          $match: {userId: new mongoose.Types.ObjectId(userId)}
+        },
+        { $unwind: "$items" },
+        {
+          $lookup:
+          {
+            from: "products",
+            localField: "items._id",
+            foreignField: "_id",
+            as: "newItems"
+          }
+        },
+        { $unwind: "$newItems" },
+        {
+          $group: {
+            _id: '$newItems._id',
+            name: { $first: '$newItems.name' },
+            brand: { $first: '$newItems.brand' },
+            detail: { $first: '$newItems.detail' },
+            bills: { $push: '$$ROOT._id'},
+            stores: { $push: '$store'},
+            prices: { $push: { $toInt: '$items.price'}}
+          }
+        }
+      ]
+
+      let data = await Bill.aggregate(shoppingListData)
+
+      let adjustedData = data.map((product, i) => {
+        let newProduct = {
+          _id: product._id,
+          name: product.name,
+          brand: product.brand,
+          detail: product.detail,
+          bills: product.bills,
+          stores: product.stores
+        }
+
+        let cheapestIndex = product.prices.indexOf(Math.min(...product.prices))
+        newProduct.cheapestStore = product.stores[cheapestIndex]
+        newProduct.cheapestPrice = product.prices[cheapestIndex]
+
+        return newProduct
+      })
+
       return adjustedData
     } catch (err) {
       console.log(`Error while getting Billss: ${err}`);
