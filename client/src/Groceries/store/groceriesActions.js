@@ -305,3 +305,18 @@ export function setManagementItems(payload) {
     payload
   }
 }
+
+
+export function replaceProducts(payload) {
+  return async dispatch => {
+    try{
+      await axios.put(`/api/bills`, payload).then(res => {
+        console.log(res);
+        // res.data === "OK" &&
+        // dispatch(getBills())
+      })
+    }catch(err){
+      console.log(err);
+    }
+  }
+}

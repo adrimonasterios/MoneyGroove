@@ -187,7 +187,7 @@ class BillsController {
             name: { $first: '$newItems.name' },
             brand: { $first: '$newItems.brand' },
             detail: { $first: '$newItems.detail' },
-            bills: { $push: '$$ROOT._id'},
+            bills: { $push: {_id: '$$ROOT._id', store: '$$ROOT.store', date: '$$ROOT.date' }},
             stores: { $push: '$store'},
             prices: { $push: { $toInt: '$items.price'}}
           }

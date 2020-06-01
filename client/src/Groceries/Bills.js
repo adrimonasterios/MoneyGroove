@@ -210,7 +210,11 @@ class Bills extends React.Component{
   }
 
   selectBill(bill){
-    const { savedProducts : products, error } = this.props.groceries
+    const { savedProducts : products, error, bills } = this.props.groceries
+    //If the bill only has the id key (e.g product management)
+    if((!('items' in bill)) && '_id' in bill){
+      bill = bills.filter(b => b._id === bill._id)[0]
+    }
     this.setState({selectedBill: bill})
 
     if(error) this.props.setValidationError('')
@@ -413,6 +417,7 @@ class Bills extends React.Component{
                 <p className={classes.error}>{groceries.error}</p>
                 <Table
                   size={ newBillForm ? 350 : 460}
+                  orderType='asc'
                   orderBy=''
                   headCells={billHeadCells}
                   items={groceries.items}

@@ -13,11 +13,11 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Slide from '@material-ui/core/Slide';
-
-// import { lighten } from '@material-ui/core/styles';
-// import Paper from '@material-ui/core/Paper';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-// import CancelIcon from '@material-ui/icons/Cancel';
+import { lighten } from '@material-ui/core/styles';
+import Paper from '@material-ui/core/Paper';
 
 
 const managementHeadCells = [
@@ -58,37 +58,136 @@ const styles = theme => ({
   },
   paper: {
     backgroundColor: 'white'
-  }
+  },
+  savedBill: {
+    padding: '3%',
+    margin: '1em 0',
+    color: theme.palette.text.secondary,
+    display: 'flex',
+    justifyContent: 'space-between',
+    transition: '0.3',
+    cursor: "pointer",
+    width: '60%',
+    boxShadow: '0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12)',
+    borderRadius: '4px',
+    "&:hover":{
+      backgroundColor: lighten(theme.palette.primary.light, 0.9),
+      color: theme.palette.primary.main
+    }
+  },
 });
 
 class ProductManagement extends React.Component{
   constructor(){
     super();
     this.state = {
-      open: false,
-      itemsToDelete: []
+      deleteDialog: false,
+      itemsToDelete: [],
+      replaceDialog: false,
+      newValues: [],
+      hasBills: false,
+      dialogTitle: '',
+      dialoContent: ''
     }
-    this.deleteItem = this.deleteItem.bind(this)
+    this.showDeleteDialog = this.showDeleteDialog.bind(this)
+    this.showReplaceDialog = this.showReplaceDialog.bind(this)
     this.closeDialog = this.closeDialog.bind(this)
+    this.replaceProducts = this.replaceProducts.bind(this)
   }
 
   async componentDidMount(){
+    this.props.getProducts()
     this.props.getManagementData()
   }
 
-  deleteItem(selected, items){
-    console.log(items);
+  showDeleteDialog(selected, items){
     let selectedItems = items.filter(i => selected.includes(i._id))
-    this.setState({open: true, itemsToDelete: selectedItems})
+    this.setState({deleteDialog: true, itemsToDelete: selectedItems}, () => {
+      this.hasBills()
+    })
+  }
+
+  showReplaceDialog(){
+    this.setState({deleteDialog: false, replaceDialog: true})
+  }
+
+  handleChange(newValue, valueIndex, previousValue){
+    let values = this.state.newValues.map(v => v)
+    let newValueObject = newValue? {
+      previousId: previousValue._id,
+      newId: newValue._id,
+      bills: previousValue.bills
+    } : ''
+    values[valueIndex] = newValueObject
+    this.setState({newValues: values})
+  }
+
+  replaceProducts(){
+    this.props.replaceProducts(this.state.newValues)
+  }
+
+  hasBills(){
+    let itemBills = false
+    this.state.itemsToDelete.forEach(item => {
+      if('bills' in item && item.bills.length){
+        itemBills = true
+      }
+    })
+
+    this.setState({hasBills: itemBills}, () => this.getDialogContent())
+  }
+
+  getDialogContent(){
+    const { itemsToDelete, hasBills } = this.state
+
+    if(itemsToDelete.length > 1){
+      if(hasBills){
+        this.setState({
+          dialogTitle:'No se pueden eliminar estos productos',
+          dialogText: 'Al menos uno de estos productos es parte de una Compra. Elimina el producto de cada una de las compras a las que esta vinculado'
+        })
+      }else{
+        this.setState({
+          dialogTitle:'Estas seguro que quieres eliminar estos productos?',
+          dialogText: ''
+        })
+      }
+    }else{
+      if(hasBills){
+        this.setState({
+          dialogTitle:'No se puede eliminar este producto',
+          dialogText: 'Este producto es parte de al menos una Compra. Elimina el producto de cada una de las compras a las que esta vinculado'
+        })
+      }else{
+        this.setState({
+          dialogTitle:'Estas seguro que quieres eliminar este producto?',
+          dialogText: ''
+        })
+      }
+    }
+  }
+
+  goToBill(bill){
+    this.props.history.push({
+      pathname: '/compras',
+      state: { bill }
+    })
   }
 
   closeDialog(){
-    this.setState({open: false})
+    this.setState({deleteDialog: false, replaceDialog: false, hasBills: false})
   }
 
   render(){
     const { classes, groceries } = this.props
-    const { open, itemsToDelete } = this.state
+    const {
+      deleteDialog,
+      itemsToDelete,
+      replaceDialog,
+      hasBills ,
+      dialogTitle,
+      dialogText
+    } = this.state
 
     return(
       <div className={classes.root}>
@@ -106,7 +205,7 @@ class ProductManagement extends React.Component{
                 header='Añade productos a tu lista'
                 icons={{
                   delete:{
-                    function1: this.deleteItem
+                    function1: this.showDeleteDialog
                   }
                 }}
                 />
@@ -114,8 +213,9 @@ class ProductManagement extends React.Component{
               ''
             }
           </div>
+
           <Dialog
-            open={open}
+            open={deleteDialog}
             TransitionComponent={Transition}
             keepMounted
             onClose={this.closeDialog}
@@ -126,18 +226,30 @@ class ProductManagement extends React.Component{
             aria-describedby="description"
           >
             <DialogTitle id="title">
-              {itemsToDelete.length === 1?
-                "¿Estas seguro que quieres borrar este producto?":
-                "¿Estas seguro que quieres borrar estos productos?"
-              }
+              {dialogTitle}
             </DialogTitle>
             <DialogContent>
               <DialogContentText id="description">
-                {itemsToDelete.length === 1? 'El producto' : 'Los productos'} que elegiste esta{itemsToDelete.length === 1? '':'n'} en por lo menos una compra.
+                {dialogText}
+                {itemsToDelete.map((item, i) =>
+                  <span key={`${i}`} style={{margin: '1em 0'}}>
+                    {`Elimina ${item.name} de las siguientes Compras:`}
+                    {item.bills.map((bill, index) =>
+                      <span
+                        key={index}
+                        className={classes.savedBill}
+                        onClick={e => this.goToBill(bill)}
+                        >
+                        <span style={{marginRight: '1em'}}>{bill.store}</span>
+                        <span>{helperFunctions.formatDate(bill.date)}</span>
+                      </span>
+                    )}
+                  </span>
+                )}
               </DialogContentText>
             </DialogContent>
             <DialogActions>
-              <Button onClick={this.closeDialog} color="primary">
+              <Button onClick={this.showReplaceDialog} color="primary">
                 Reemplazar
               </Button>
               <Button onClick={this.closeDialog} color="primary">
@@ -145,7 +257,6 @@ class ProductManagement extends React.Component{
               </Button>
             </DialogActions>
           </Dialog>
-
         </div>
       </div>
     )
@@ -157,7 +268,62 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = {
-  getManagementData: groceriesActions.getManagementData
+  getProducts: groceriesActions.getProducts,
+  getManagementData: groceriesActions.getManagementData,
+  replaceProducts: groceriesActions.replaceProducts,
 }
 
 export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(withRouter(ProductManagement)));
+
+
+// <Dialog
+//   open={replaceDialog}
+//   TransitionComponent={Transition}
+//   keepMounted
+//   onClose={this.closeDialog}
+//   classes={{
+//     paper: classes.paper
+//   }}
+//   aria-labelledby="title"
+//   aria-describedby="description"
+// >
+//   <DialogTitle id="title">
+//     Reemplazo de productos
+//   </DialogTitle>
+//   {itemsToDelete.map((item, i) =>
+//     <DialogContent key={`key_${i}`}>
+//       <DialogContentText id="description">
+//         Elige el producto por el que quieres reemplazar a
+//         {` ${item.name} ${item.brand} (${item.detail})`}
+//       </DialogContentText>
+//       <Autocomplete
+//         value={item[i]}
+//         options={groceries.savedProducts.filter(i => i._id !== item._id)}
+//         clearOnBlur={true}
+//         classes={{
+//           paper: classes.paper,
+//           option: classes.option,
+//         }}
+//         getOptionSelected={(option, value) => !Object.keys(value).length ? true : option === value}
+//         getOptionLabel={(option) => Object.keys(option).length? option.itemFullName : ''}
+//         onChange={(e, value) => {
+//           this.handleChange(value, i, item)
+//         }}
+//         className={classes.selectItem}
+//         renderInput={(params) => <TextField {...params}
+//                                             label="Item"
+//                                             variant="outlined"
+//                                             />}
+//         />
+//     </DialogContent>
+//   )}
+//   <DialogActions>
+//     <Button onClick={this.closeDialog} color="primary">
+//       Cancelar
+//     </Button>
+//     <Button onClick={this.replaceProducts} color="primary">
+//       Reemplazar{itemsToDelete.length > 1? ' Productos': 'Producto'}
+//     </Button>
+//   </DialogActions>
+// </Dialog>
+//
