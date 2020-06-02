@@ -115,7 +115,42 @@ const styles = theme => ({
     width: '100%',
   },
   management: {
-    width: '33.5%'
+    width: '33.5%',
+  },
+  dataBlocks: {
+    display: 'flex',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
+    width: '100%',
+    height: '100%',
+    marginTop: '2em'
+  },
+  generalDataMain: {
+    width: '100%',
+    height: '50%',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: '5%'
+  },
+  generalData: {
+    width: '50%',
+    height: '50%',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: '5%'
+  },
+  quantity: {
+    fontSize: '3em',
+    color: theme.palette.text.secondary
+  },
+  tag: {
+    whiteSpace: 'break-spaces',
+    textAlign: 'center',
+    color: theme.palette.secondary.main
   }
 });
 
@@ -123,13 +158,38 @@ class Groceries extends React.Component{
   constructor(){
     super();
     this.state = {
-
+      generalData: {
+        total: {
+          quantity: 0,
+          tag: 'Total Gastado en el Año'
+        },
+        products: {
+          quantity: 0,
+          tag: 'Productos'
+        },
+        brands: {
+          quantity: 0,
+          tag: 'Marcas'
+        }
+      }
     }
   }
 
   async componentDidMount(){
-    this.props.getBills()
-    this.props.getShoppingListData()
+    await this.props.getBills()
+    await this.props.getShoppingListData()
+    await this.props.getManagementData()
+
+    let products = await this.props.groceries.managementItems.length
+    let brands = await [...new Set(this.props.groceries.managementItems.map(item => item.brand).filter(item => item !== 'N/A'))].length
+    let total = await this.props.groceries.lineChartData.datasets[0].data.reduce((accumulator, current) => accumulator + current)
+
+    let newGeneralData = Object.assign({}, this.state.generalData)
+    newGeneralData.products.quantity = products
+    newGeneralData.brands.quantity = brands
+    newGeneralData.total.quantity = total
+
+    this.setState({generalData: newGeneralData})
   }
 
   goToBill(bill){
@@ -139,9 +199,20 @@ class Groceries extends React.Component{
     })
   }
 
+  getGeneralData(item, i, classes){
+    return (
+      <Paper
+        className={i === 0? classes.generalDataMain : classes.generalData}
+        >
+        <span className={classes.quantity}>{i === 0? `${item.quantity} Bs.` : item.quantity}</span>
+        <span className={classes.tag}>{item.tag}</span>
+      </Paper>
+    )
+  }
+
   render(){
     const { classes, groceries } = this.props
-    const { selectedBill } = this.state
+    const { generalData } = this.state
 
     return(
       <div className={classes.root}>
@@ -204,6 +275,13 @@ class Groceries extends React.Component{
             </div>
             <div className={`${classes.billsAndProducts} ${classes.management}`}>
               <Link to="/administracion-de-productos" className={classes.link}>ADMINISTRACION</Link>
+              <div className={classes.dataBlocks}>
+                {(groceries.managementItems.length && Object.keys(groceries.lineChartData).length) &&
+                  Object.keys(generalData).map((key, i) =>
+                    this.getGeneralData(generalData[key], i, classes)
+                  )
+                }
+              </div>
             </div>
             <div className={classes.billsAndProducts}>
               <Link to="/proxima-compra" className={classes.link}>PROXIMA COMPRA</Link>
@@ -243,6 +321,7 @@ const mapDispatchToProps = {
   getBills: groceriesActions.getBills,
   clearState: groceriesActions.clearState,
   getShoppingListData: groceriesActions.getShoppingListData,
+  getManagementData: groceriesActions.getManagementData,
 }
 
 export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(withRouter(Groceries)));
