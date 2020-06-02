@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import * as helpers from '../../app/helpers.js'
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 // import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
@@ -221,7 +222,7 @@ function ItemForm (props) {
               option: classes.option,
             }}
           >
-          {productCategories.map((category, i) =>
+          {helpers.globalVariables.productCategories.map((category, i) =>
             <MenuItem key={`key_${i}`} value={category}>{category}</MenuItem>
           )}
           </Select>

@@ -27,6 +27,39 @@ class ProductsController {
       throw err;
     }
   }
+
+
+  update(products) {
+    return new Promise(function(resolve, reject) {
+      Product.bulkWrite(
+        products.map((data) =>
+          ({
+            updateOne: {
+              filter: { _id: data._id },
+              update: { $set: data }
+            }
+          })
+        )
+      )
+        .then(data => {
+          resolve(data)
+        })
+        .catch(err => reject(err));
+    });
+  }
+
+  async delete(ids) {
+    return new Promise(function(resolve, reject) {
+      Product.remove({
+        _id: {
+          $in: ids
+        }
+      })
+      .then(bills => resolve(bills))
+      .catch(err => reject(err));
+    });
+  }
 }
+
 
 module.exports = new ProductsController();

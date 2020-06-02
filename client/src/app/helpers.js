@@ -1,5 +1,23 @@
 import moment from 'moment-timezone';
 
+export const globalVariables = {
+  productCategories: [
+    'Abarrotes',
+    'Bebes y Niños',
+    'Bebidas',
+    'Carnes',
+    'Cuidado Personal',
+    'Frutas',
+    'Hogar',
+    'Lacteos',
+    'Limpieza',
+    'Mascotas',
+    'Pasteleria',
+    'Snacks',
+    'Verduras',
+  ]
+}
+
 export function formatDate(date) {
   let formattedDate = moment.tz(`${date}`, "America/Toronto").format().split('T')[0]
   return formattedDate

@@ -212,13 +212,16 @@ class Bills extends React.Component{
   selectBill(bill){
     const { savedProducts : products, error, bills } = this.props.groceries
     //If the bill only has the id key (e.g product management)
+    console.log('bill1', bill);
     if((!('items' in bill)) && '_id' in bill){
       bill = bills.filter(b => b._id === bill._id)[0]
     }
+    console.log('bill2', bill);
     this.setState({selectedBill: bill})
 
     if(error) this.props.setValidationError('')
 
+    console.log('bill3', bill);
     if(Object.keys(products).length){
       if(this.state.newBillForm) this.setState({newBillForm: false})
       //find out which products does the bill have and populate each bill item with the product information (avoid loop within loop)

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Bill = require("./Bill");
+const Product = require("../products/Product");
 
 class BillsController {
   async create(data) {
@@ -195,6 +196,7 @@ class BillsController {
       ]
 
       let data = await Bill.aggregate(shoppingListData)
+      let products = await Product.find({userId: new mongoose.Types.ObjectId(userId)}, {name: 1, brand: 1, detail: 1})
 
       let adjustedData = data.map((product, i) => {
         let newProduct = {
@@ -211,6 +213,12 @@ class BillsController {
         newProduct.cheapestPrice = product.prices[cheapestIndex]
 
         return newProduct
+      })
+      let dataIds = adjustedData.map(item => String(item._id))
+
+      //Add items that are not in any Bill
+      products.forEach(product => {
+        if(!dataIds.includes(String(product._id))) adjustedData.push(product)
       })
 
       return adjustedData

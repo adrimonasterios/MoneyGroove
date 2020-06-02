@@ -307,13 +307,28 @@ export function setManagementItems(payload) {
 }
 
 
-export function replaceProducts(payload) {
+export function deleteProducts(payload) {
   return async dispatch => {
     try{
-      await axios.put(`/api/bills`, payload).then(res => {
-        console.log(res);
-        // res.data === "OK" &&
-        // dispatch(getBills())
+      await axios.delete(`/api/products/${payload}`).then(res => {
+        res.data === "OK" &&
+        dispatch(getManagementData())
+      })
+    }catch(err){
+      console.log(err);
+    }
+  }
+}
+
+
+export function updateProducts(payload) {
+  console.log('payload');
+  console.log(payload);
+  return async dispatch => {
+    try{
+      await axios.put(`/api/products`, payload).then(res => {
+        res.data === "OK" &&
+        dispatch(getManagementData())
       })
     }catch(err){
       console.log(err);

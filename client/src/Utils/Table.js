@@ -17,6 +17,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/AddCircle';
+import EditIcon from '@material-ui/icons/Edit';
 
 import * as helperFunctions from '../app/helpers.js';
 
@@ -145,22 +146,7 @@ const EnhancedTableToolbar = (props) => {
       )}
 
       {numSelected > 0 && (
-        <div>
-          {'delete' in icons && (
-            <Tooltip title="Delete">
-              <IconButton
-                aria-label="delete"
-                onClick={(e) => {
-                  icons.delete.function1(props.selected, props.items)
-                  props.setSelected([])
-                }}
-                >
-                <DeleteIcon
-                  style={{color: "#ff3b5e"}}
-                  />
-              </IconButton>
-            </Tooltip>
-          )}
+        <div style={{display: 'flex'}}>
           {'add' in icons && (
             <Tooltip title="Add">
               <IconButton
@@ -172,6 +158,36 @@ const EnhancedTableToolbar = (props) => {
                 >
                 <AddIcon
                   style={{color: "green"}}
+                  />
+              </IconButton>
+            </Tooltip>
+          )}
+          {'edit' in icons && (
+            <Tooltip title="Edit">
+              <IconButton
+                aria-label="edit"
+                onClick={(e) => {
+                  icons.edit.function1(props.selected, props.items)
+                  props.setSelected([])
+                }}
+                >
+                <EditIcon
+                  style={{color: "green"}}
+                  />
+              </IconButton>
+            </Tooltip>
+          )}
+          {'delete' in icons && (
+            <Tooltip title="Delete">
+              <IconButton
+                aria-label="delete"
+                onClick={(e) => {
+                  icons.delete.function1(props.selected, props.items)
+                  props.setSelected([])
+                }}
+                >
+                <DeleteIcon
+                  style={{color: "#ff3b5e"}}
                   />
               </IconButton>
             </Tooltip>
@@ -347,9 +363,9 @@ export default function Bill(props) {
             </TableCell>
             <TableCell align="right">{row.brand}</TableCell>
             <TableCell align="right">{row.detail}</TableCell>
-            <TableCell align="right">{helperFunctions.formatAmount(String(row.cheapestPrice))}</TableCell>
-            <TableCell align="right">{row.cheapestStore}</TableCell>
-            <TableCell align="right">{row.bills.length}</TableCell>
+            <TableCell align="right">{'cheapestPrice' in row? helperFunctions.formatAmount(String(row.cheapestPrice)) : 0}</TableCell>
+            <TableCell align="right">{'cheapestStore' in row? row.cheapestStore : 'N/A'}</TableCell>
+            <TableCell align="right">{'bills' in row? row.bills.length : 0}</TableCell>
           </TableRow>
         )
       default:

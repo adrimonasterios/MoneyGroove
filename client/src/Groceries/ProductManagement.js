@@ -2,22 +2,26 @@ import React from 'react';
 import { withRouter } from "react-router-dom";
 import { connect } from 'react-redux';
 import * as groceriesActions from './store/groceriesActions';
-import * as helperFunctions from '../app/helpers.js';
+import * as helpers from '../app/helpers.js';
 
 import Table from '../Utils/Table'
 
 import { withStyles } from '@material-ui/styles';
+import { createMuiTheme } from "@material-ui/core";
+import { ThemeProvider } from "@material-ui/styles";
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Slide from '@material-ui/core/Slide';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import InputLabel from '@material-ui/core/InputLabel';
+import FormControl from '@material-ui/core/FormControl';
+import OutlinedInput from '@material-ui/core/OutlinedInput';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 import { lighten } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
 
 
 const managementHeadCells = [
@@ -33,6 +37,18 @@ const managementHeadCells = [
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
+
+const selectTheme = createMuiTheme({
+  overrides: {
+    MuiSelect:{
+      select: {
+        "&:focus":{
+          backgroundColor: 'white'
+        }
+      }
+    }
+  }
+})
 
 
 const styles = theme => ({
@@ -75,6 +91,41 @@ const styles = theme => ({
       color: theme.palette.primary.main
     }
   },
+  deleteButton: {
+    color: theme.palette.error.main
+  },
+  dialogTitle: {
+    color: theme.palette.text.secondary
+  },
+  paperWidthFalse: {
+    width: '60%'
+  },
+  form: {
+    display: 'flex',
+    justifyContent: "space-between",
+    width: '100%',
+    "& option": {
+      background: 'white'
+    }
+  },
+  item: {
+    width: "24%",
+  },
+  selectItem: {
+    width: "40%",
+  },
+  brand: {
+    width: "24%",
+    "&.MuiAutocomplete-option": {
+        background: 'white'
+      }
+  },
+  detail: {
+    width: "24%"
+  },
+  category: {
+    width: "24%"
+  },
 });
 
 class ProductManagement extends React.Component{
@@ -82,17 +133,19 @@ class ProductManagement extends React.Component{
     super();
     this.state = {
       deleteDialog: false,
+      editDialog: false,
       itemsToDelete: [],
-      replaceDialog: false,
-      newValues: [],
+      itemsToEdit: [],
       hasBills: false,
       dialogTitle: '',
-      dialoContent: ''
+      dialoContent: '',
+      editedProducts: []
     }
     this.showDeleteDialog = this.showDeleteDialog.bind(this)
-    this.showReplaceDialog = this.showReplaceDialog.bind(this)
+    this.showEditDialog = this.showEditDialog.bind(this)
     this.closeDialog = this.closeDialog.bind(this)
-    this.replaceProducts = this.replaceProducts.bind(this)
+    this.deleteProducts = this.deleteProducts.bind(this)
+    this.updateProducts = this.updateProducts.bind(this)
   }
 
   async componentDidMount(){
@@ -107,23 +160,26 @@ class ProductManagement extends React.Component{
     })
   }
 
-  showReplaceDialog(){
-    this.setState({deleteDialog: false, replaceDialog: true})
+  showEditDialog(selected, items){
+    let selectedItems = this.props.groceries.savedProducts.filter(i => selected.includes(i._id))
+    //create other array to handle the changes, so the first information keeps intact and can be shown for example in the edit dialog.
+     //Each object has to be assigned as a new one, because if not any change will affect both arrays
+    let editItems = selectedItems.map(item => {
+      let itemCopy = Object.assign({}, item)
+      delete itemCopy.itemFullName
+      return itemCopy
+  })
+    this.setState({
+      editDialog: true,
+      itemsToEdit: selectedItems,
+      editedProducts: editItems
+    })
   }
 
-  handleChange(newValue, valueIndex, previousValue){
-    let values = this.state.newValues.map(v => v)
-    let newValueObject = newValue? {
-      previousId: previousValue._id,
-      newId: newValue._id,
-      bills: previousValue.bills
-    } : ''
-    values[valueIndex] = newValueObject
-    this.setState({newValues: values})
-  }
-
-  replaceProducts(){
-    this.props.replaceProducts(this.state.newValues)
+  handleChange(value, field, index){
+    let products = this.state.editedProducts.map(item => item)
+    products[index][field] = value
+    this.setState({editedProducts: products})
   }
 
   hasBills(){
@@ -174,19 +230,32 @@ class ProductManagement extends React.Component{
     })
   }
 
+  deleteProducts(){
+    let itemsToDeleteIds = this.state.itemsToDelete.map(item => item._id)
+    this.props.deleteProducts(itemsToDeleteIds).then(res => this.closeDialog)
+  }
+
+  updateProducts(){
+    this.props.updateProducts(this.state.editedProducts)
+    window.location.reload()
+  }
+
   closeDialog(){
-    this.setState({deleteDialog: false, replaceDialog: false, hasBills: false})
+    this.setState({deleteDialog: false, editDialog: false, hasBills: false})
   }
 
   render(){
+    const { productCategories } = helpers.globalVariables
     const { classes, groceries } = this.props
     const {
       deleteDialog,
+      editDialog,
       itemsToDelete,
-      replaceDialog,
+      itemsToEdit,
       hasBills ,
       dialogTitle,
-      dialogText
+      dialogText,
+      editedProducts
     } = this.state
 
     return(
@@ -204,8 +273,11 @@ class ProductManagement extends React.Component{
                 items={groceries.managementItems}
                 header='Añade productos a tu lista'
                 icons={{
-                  delete:{
+                  delete: {
                     function1: this.showDeleteDialog
+                  },
+                  edit: {
+                    function1: this.showEditDialog
                   }
                 }}
                 />
@@ -225,23 +297,24 @@ class ProductManagement extends React.Component{
             aria-labelledby="title"
             aria-describedby="description"
           >
-            <DialogTitle id="title">
+            <DialogTitle id="title" className={classes.dialogTitle}>
               {dialogTitle}
             </DialogTitle>
             <DialogContent>
               <DialogContentText id="description">
                 {dialogText}
+                <br/>
                 {itemsToDelete.map((item, i) =>
                   <span key={`${i}`} style={{margin: '1em 0'}}>
-                    {`Elimina ${item.name} de las siguientes Compras:`}
-                    {item.bills.map((bill, index) =>
+                    {hasBills && 'bills' in item? <span>Elimina <span style={{fontWeight: 'bold'}}>{item.name}</span> de las siguientes Compras:</span> : ''}
+                    {'bills' in item && item.bills.map((bill, index) =>
                       <span
                         key={index}
                         className={classes.savedBill}
                         onClick={e => this.goToBill(bill)}
                         >
                         <span style={{marginRight: '1em'}}>{bill.store}</span>
-                        <span>{helperFunctions.formatDate(bill.date)}</span>
+                        <span>{helpers.formatDate(bill.date)}</span>
                       </span>
                     )}
                   </span>
@@ -249,11 +322,91 @@ class ProductManagement extends React.Component{
               </DialogContentText>
             </DialogContent>
             <DialogActions>
-              <Button onClick={this.showReplaceDialog} color="primary">
-                Reemplazar
-              </Button>
               <Button onClick={this.closeDialog} color="primary">
+                Cancelar
+              </Button>
+              <Button onClick={this.deleteProducts} className={classes.deleteButton} disabled={hasBills}>
                 Eliminar
+              </Button>
+            </DialogActions>
+          </Dialog>
+
+          <Dialog
+            open={editDialog}
+            TransitionComponent={Transition}
+            keepMounted
+            maxWidth={false}
+            onClose={this.closeDialog}
+            classes={{
+              paper: classes.paper,
+              paperWidthFalse: classes.paperWidthFalse
+            }}
+            className={classes.editDialog}
+            aria-labelledby="title"
+            aria-describedby="description"
+          >
+            <DialogTitle id="title">
+              Editar productos
+            </DialogTitle>
+            {itemsToEdit.map((item, i) =>
+              <DialogContent key={`key_${i}`}>
+                <DialogContentText id="description">
+                  Aqui puedes editar a
+                  {` ${item.name} ${item.brand} (${item.detail})`}
+                </DialogContentText>
+                <form className={classes.form}>
+                  <FormControl fullWidth className={classes.item} variant="outlined">
+                    <InputLabel htmlFor={`item${i}`}>Item</InputLabel>
+                    <OutlinedInput
+                      id={`item${i}`}
+                      value={editedProducts[i].name}
+                      onChange={(e) => this.handleChange(e.target.value, "name", i)}
+                      labelWidth={60}
+                      />
+                  </FormControl>
+                  <FormControl fullWidth className={classes.brand} variant="outlined">
+                    <InputLabel htmlFor={`brand${i}`}>Marca</InputLabel>
+                    <OutlinedInput
+                      id={`brand${i}`}
+                      value={editedProducts[i].brand}
+                      onChange={(e) => this.handleChange(e.target.value, "brand", i)}
+                      labelWidth={60}
+                      />
+                  </FormControl>
+                  <FormControl variant="outlined" className={classes.category}>
+                    <InputLabel id="category">Categoría</InputLabel>
+                    <ThemeProvider theme={selectTheme}>
+                    <Select
+                      labelId="category"
+                      value={editedProducts[i].category}
+                      onChange={(e) => this.handleChange(e.target.value, "category", i)}
+                      label="Categoría"
+
+                    >
+                    {productCategories.map((category, i) =>
+                      <MenuItem key={`key_${i}`} value={category}>{category}</MenuItem>
+                    )}
+                    </Select>
+                  </ThemeProvider>
+                  </FormControl>
+                  <FormControl fullWidth className={classes.detail} variant="outlined">
+                    <InputLabel htmlFor={`detail${i}`}>Detalle</InputLabel>
+                    <OutlinedInput
+                      id={`detail${i}`}
+                      value={editedProducts[i].detail}
+                      onChange={(e) => this.handleChange(e.target.value, "detail", i)}
+                      labelWidth={60}
+                      />
+                  </FormControl>
+                </form>
+              </DialogContent>
+            )}
+            <DialogActions>
+              <Button onClick={this.closeDialog} color="primary">
+                Cancelar
+              </Button>
+              <Button onClick={this.updateProducts} color="primary">
+                Guardar
               </Button>
             </DialogActions>
           </Dialog>
@@ -270,60 +423,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
   getProducts: groceriesActions.getProducts,
   getManagementData: groceriesActions.getManagementData,
-  replaceProducts: groceriesActions.replaceProducts,
+  deleteProducts: groceriesActions.deleteProducts,
+  updateProducts: groceriesActions.updateProducts,
 }
 
 export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(withRouter(ProductManagement)));
-
-
-// <Dialog
-//   open={replaceDialog}
-//   TransitionComponent={Transition}
-//   keepMounted
-//   onClose={this.closeDialog}
-//   classes={{
-//     paper: classes.paper
-//   }}
-//   aria-labelledby="title"
-//   aria-describedby="description"
-// >
-//   <DialogTitle id="title">
-//     Reemplazo de productos
-//   </DialogTitle>
-//   {itemsToDelete.map((item, i) =>
-//     <DialogContent key={`key_${i}`}>
-//       <DialogContentText id="description">
-//         Elige el producto por el que quieres reemplazar a
-//         {` ${item.name} ${item.brand} (${item.detail})`}
-//       </DialogContentText>
-//       <Autocomplete
-//         value={item[i]}
-//         options={groceries.savedProducts.filter(i => i._id !== item._id)}
-//         clearOnBlur={true}
-//         classes={{
-//           paper: classes.paper,
-//           option: classes.option,
-//         }}
-//         getOptionSelected={(option, value) => !Object.keys(value).length ? true : option === value}
-//         getOptionLabel={(option) => Object.keys(option).length? option.itemFullName : ''}
-//         onChange={(e, value) => {
-//           this.handleChange(value, i, item)
-//         }}
-//         className={classes.selectItem}
-//         renderInput={(params) => <TextField {...params}
-//                                             label="Item"
-//                                             variant="outlined"
-//                                             />}
-//         />
-//     </DialogContent>
-//   )}
-//   <DialogActions>
-//     <Button onClick={this.closeDialog} color="primary">
-//       Cancelar
-//     </Button>
-//     <Button onClick={this.replaceProducts} color="primary">
-//       Reemplazar{itemsToDelete.length > 1? ' Productos': 'Producto'}
-//     </Button>
-//   </DialogActions>
-// </Dialog>
-//
