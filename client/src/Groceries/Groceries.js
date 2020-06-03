@@ -106,6 +106,17 @@ const styles = theme => ({
       color: theme.palette.text.disabled
     }
   },
+  addBillPlaceholder:{
+    color: theme.palette.callToAction.main,
+    textDecoration: 'none',
+    fontSize: '18px',
+    "&:hover":{
+      color: theme.palette.callToAction.intense
+    },
+    "&:visited":{
+      color: theme.palette.callToAction.main,
+    }
+  },
   item: {
     padding: '3%',
     marginBottom: '1em',
@@ -197,7 +208,13 @@ class Groceries extends React.Component{
 
     let products = await this.props.groceries.managementItems.length
     let brands = await [...new Set(this.props.groceries.managementItems.map(item => item.brand).filter(item => item !== 'N/A'))].length
-    let total = await this.props.groceries.lineChartData.datasets[0].data.reduce((accumulator, current) => accumulator + current)
+    let total = 0
+    if('datasets' in this.props.groceries.lineChartData &&
+      this.props.groceries.lineChartData.datasets.length &&
+      this.props.groceries.lineChartData.datasets[0].data.length
+    ){
+      total = await this.props.groceries.lineChartData.datasets[0].data.reduce((accumulator, current) => accumulator + current)
+    }
 
     let newGeneralData = Object.assign({}, this.state.generalData)
     newGeneralData.products.quantity = products
@@ -275,7 +292,8 @@ class Groceries extends React.Component{
             <div className={classes.billsAndProducts}>
               <Link to="/compras" className={classes.link}>COMPRAS</Link>
               <div className={classes.billsList}>
-                {groceries.bills.reverse().filter((bill, i) => i <= 4).map((bill, i) =>
+                {groceries.bills.length?
+                  groceries.bills.reverse().filter((bill, i) => i <= 4).map((bill, i) =>
                   <Paper
                     key={i}
                     className={classes.savedBill}
@@ -284,7 +302,8 @@ class Groceries extends React.Component{
                     <span style={{marginRight: '1em'}}>{bill.store}</span>
                     <span>{helperFunctions.formatDate(bill.date)}</span>
                   </Paper>
-                )
+                ) :
+                <Link to="/compras" className={classes.addBillPlaceholder}>Haz click aqui para agregar una compra</Link>
               }
               </div>
             </div>
