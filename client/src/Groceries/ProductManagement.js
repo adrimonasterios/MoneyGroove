@@ -64,6 +64,20 @@ const styles = theme => ({
     height: '100%',
     width: '100%',
   },
+  titleRow: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '1em'
+  },
+  newProduct: {
+    backgroundColor: theme.palette.callToAction.main,
+    color: theme.palette.secondary.contrastText,
+    height: '3em',
+    "&:hover": {
+      backgroundColor: theme.palette.callToAction.intense,
+    }
+  },
   itemsList: {
     height: '100%',
     width: '100%',
@@ -100,6 +114,10 @@ const styles = theme => ({
   paperWidthFalse: {
     width: '60%'
   },
+  newPaperWidthFalse: {
+    width: '35%',
+    padding: '2%',
+  },
   form: {
     display: 'flex',
     justifyContent: "space-between",
@@ -126,6 +144,46 @@ const styles = theme => ({
   category: {
     width: "24%"
   },
+  newForm: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: "space-between",
+    width: '100%',
+    "& option": {
+      background: 'white'
+    }
+  },
+  newItem: {
+    width: "100%",
+    marginBottom: '1em',
+  },
+  newBrand: {
+    width: "100%",
+    marginBottom: '1em',
+    "&.MuiAutocomplete-option": {
+        background: 'white'
+      }
+  },
+  newDetail: {
+    width: "100%",
+    marginBottom: '1em',
+  },
+  newCategory: {
+    width: "100%",
+    marginBottom: '1em',
+  },
+  newButtons: {
+    padding: '8px 24px'
+  },
+  saveProduct: {
+    backgroundColor: theme.palette.callToAction.main,
+    color: 'white'
+  },
+  error: {
+    color: theme.palette.error.main,
+    padding: '0 24px',
+    fontFamily: 'Source Sans Pro,Avenir LT Std,Roboto'
+  }
 });
 
 class ProductManagement extends React.Component{
@@ -134,18 +192,26 @@ class ProductManagement extends React.Component{
     this.state = {
       deleteDialog: false,
       editDialog: false,
+      newDialog: false,
       itemsToDelete: [],
       itemsToEdit: [],
       hasBills: false,
       dialogTitle: '',
       dialoContent: '',
-      editedProducts: []
+      editedProducts: [],
+      newProduct: {
+        item: '',
+        brand: '',
+        category: '',
+        detail: ''
+      }
     }
     this.showDeleteDialog = this.showDeleteDialog.bind(this)
     this.showEditDialog = this.showEditDialog.bind(this)
     this.closeDialog = this.closeDialog.bind(this)
     this.deleteProducts = this.deleteProducts.bind(this)
     this.updateProducts = this.updateProducts.bind(this)
+    this.createProduct = this.createProduct.bind(this)
   }
 
   async componentDidMount(){
@@ -176,10 +242,20 @@ class ProductManagement extends React.Component{
     })
   }
 
+  showNewProductDialog(){
+    this.setState({newDialog: true})
+  }
+
   handleChange(value, field, index){
     let products = this.state.editedProducts.map(item => item)
     products[index][field] = value
     this.setState({editedProducts: products})
+  }
+
+  handleNewProductChange(value, field){
+    let copy = Object.assign({}, this.state.newProduct)
+    copy[field] = value
+    this.setState({newProduct: copy})
   }
 
   hasBills(){
@@ -232,7 +308,10 @@ class ProductManagement extends React.Component{
 
   deleteProducts(){
     let itemsToDeleteIds = this.state.itemsToDelete.map(item => item._id)
-    this.props.deleteProducts(itemsToDeleteIds).then(res => this.closeDialog)
+    this.props.deleteProducts(itemsToDeleteIds).then(res => {
+      this.closeDialog()
+    })
+
   }
 
   updateProducts(){
@@ -241,7 +320,13 @@ class ProductManagement extends React.Component{
   }
 
   closeDialog(){
-    this.setState({deleteDialog: false, editDialog: false, hasBills: false})
+    this.setState({deleteDialog: false, editDialog: false, hasBills: false, newDialog: false})
+  }
+
+  createProduct(){
+    this.props.createProduct(this.state.newProduct, this.props.groceries.savedProducts).then(res => {
+      if(!this.props.groceries.error) window.location.reload()
+    })
   }
 
   render(){
@@ -250,19 +335,30 @@ class ProductManagement extends React.Component{
     const {
       deleteDialog,
       editDialog,
+      newDialog,
       itemsToDelete,
       itemsToEdit,
       hasBills ,
       dialogTitle,
       dialogText,
-      editedProducts
+      editedProducts,
+      newProduct
     } = this.state
 
     return(
       <div className={classes.root}>
         <div className={classes.groceries}>
           <div className={classes.itemsList}>
-            <h2 style={{fontWeight: 200, marginTop:0}}>Administracion de Productos</h2>
+            <div className={classes.titleRow}>
+              <h2 style={{fontWeight: 200, margin:0}}>Administracion de Productos</h2>
+              <Button
+                variant="contained"
+                className={classes.newProduct}
+                onClick={(e) => this.showNewProductDialog()}
+                >
+                Nueva Compra
+              </Button>
+            </div>
             {groceries.managementItems.length?
               <Table
                 size={570}
@@ -345,7 +441,7 @@ class ProductManagement extends React.Component{
             aria-labelledby="title"
             aria-describedby="description"
           >
-            <DialogTitle id="title">
+            <DialogTitle id="title" className={classes.dialogTitle}>
               Editar productos
             </DialogTitle>
             {itemsToEdit.map((item, i) =>
@@ -410,6 +506,88 @@ class ProductManagement extends React.Component{
               </Button>
             </DialogActions>
           </Dialog>
+
+          <Dialog
+            open={newDialog}
+            TransitionComponent={Transition}
+            keepMounted
+            maxWidth={false}
+            onClose={this.closeDialog}
+            classes={{
+              paper: classes.paper,
+              paperWidthFalse: classes.newPaperWidthFalse
+            }}
+            className={classes.newDialog}
+            aria-labelledby="title"
+            aria-describedby="description"
+          >
+            <DialogTitle id="title" className={classes.dialogTitle}>
+              Nuevo Producto
+            </DialogTitle>
+            <DialogContent>
+              <form className={classes.newForm}>
+                <FormControl fullWidth className={classes.newItem} variant="outlined">
+                  <InputLabel htmlFor="item">Item</InputLabel>
+                  <OutlinedInput
+                    id="item"
+                    value={newProduct.item}
+                    onChange={(e) => this.handleNewProductChange(e.target.value, "item")}
+                    labelWidth={60}
+                    />
+                </FormControl>
+                <FormControl fullWidth className={classes.newBrand} variant="outlined">
+                  <InputLabel htmlFor="brand">Marca</InputLabel>
+                  <OutlinedInput
+                    id="brand"
+                    value={newProduct.brand}
+                    onChange={(e) => this.handleNewProductChange(e.target.value, "brand")}
+                    labelWidth={60}
+                    />
+                </FormControl>
+                <FormControl variant="outlined" className={classes.newCategory}>
+                  <InputLabel id="category">Categoría</InputLabel>
+                  <ThemeProvider theme={selectTheme}>
+                  <Select
+                    labelId="category"
+                    value={newProduct.category}
+                    onChange={(e) => this.handleNewProductChange(e.target.value, "category")}
+                    label="Categoría"
+                    classes={{
+                      option: classes.option,
+                    }}
+                  >
+                  {helpers.globalVariables.productCategories.map((category, i) =>
+                    <MenuItem key={`key_${i}`} value={category}>{category}</MenuItem>
+                  )}
+                  </Select>
+                </ThemeProvider>
+                </FormControl>
+                <FormControl fullWidth className={classes.newDetail} variant="outlined">
+                  <InputLabel htmlFor="detail">Detalle</InputLabel>
+                  <OutlinedInput
+                    id="detail"
+                    value={newProduct.detail}
+                    onChange={(e) => this.handleNewProductChange(e.target.value, "detail")}
+                    labelWidth={60}
+                    />
+                </FormControl>
+              </form>
+            </DialogContent>
+            {this.props.groceries.error? <p className={classes.error}>{this.props.groceries.error}</p> : ''}
+            <DialogActions className={classes.newButtons}>
+              <Button onClick={this.closeDialog} color="primary">
+                Cancelar
+              </Button>
+              <Button
+                onClick={this.createProduct}
+                variant="contained"
+                size="small"
+                className={classes.saveProduct}
+                >
+                Guardar
+              </Button>
+            </DialogActions>
+          </Dialog>
         </div>
       </div>
     )
@@ -425,6 +603,7 @@ const mapDispatchToProps = {
   getManagementData: groceriesActions.getManagementData,
   deleteProducts: groceriesActions.deleteProducts,
   updateProducts: groceriesActions.updateProducts,
+  createProduct: groceriesActions.createProduct,
 }
 
 export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(withRouter(ProductManagement)));

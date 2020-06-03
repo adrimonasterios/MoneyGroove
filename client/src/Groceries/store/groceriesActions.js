@@ -30,19 +30,39 @@ export function addProduct(payload) {
 }
 
 
-export function createProduct(data) {
+export function createProduct(data, products) {
   return async dispatch => {
     try{
-      let product = {
-        name: data.item,
-        brand: data.brand,
-        category: data.category,
-        detail: data.detail
-      }
+      let anySimilar = false
 
-      await axios.post('/api/products/create', product).then(res => {
-        dispatch(getProducts())
+      products.forEach(item => {
+        console.log('item',item.name.split(' ').join('').toLowerCase().trim());
+        console.log('data',data.item.split(' ').join('').toLowerCase().trim());
+        if(
+          item.name.split(' ').join('').toLowerCase().trim() === data.item.split(' ').join('').toLowerCase().trim() &&
+          item.brand.split(' ').join('').toLowerCase().trim() === data.brand.split(' ').join('').toLowerCase().trim() &&
+          item.category === data.category &&
+          item.detail.split(' ').join('').toLowerCase().trim() === data.detail.split(' ').join('').toLowerCase().trim()
+        ){
+          anySimilar = true
+        }
       })
+
+      if(!anySimilar){
+        let product = {
+          name: data.item,
+          brand: data.brand,
+          category: data.category,
+          detail: data.detail
+        }
+        dispatch(setValidationError(''))
+
+        await axios.post('/api/products/create', product).then(res => {
+            dispatch(getProducts())
+          })
+      }else{
+        dispatch(setValidationError('Ya hay un producto con las mismas propiedades'))
+      }
     }catch(err){
       console.log(err);
     }

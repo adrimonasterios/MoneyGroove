@@ -116,27 +116,42 @@ const styles = theme => ({
   },
   management: {
     width: '33.5%',
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  managementLink: {
+    backgroundColor: 'white',
+    width: '100%',
+    height: '15%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   dataBlocks: {
     display: 'flex',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     flexWrap: 'wrap',
     width: '100%',
-    height: '100%',
-    marginTop: '2em'
+    height: '83%',
   },
   generalDataMain: {
+    backgroundColor: 'white',
     width: '100%',
-    height: '50%',
+    height: '49%',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: '5%'
+    padding: '5%',
+    marginBottom: '2%'
   },
   generalData: {
-    width: '50%',
-    height: '50%',
+    backgroundColor: 'white',
+    width: '49%',
+    height: '49%',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
@@ -273,13 +288,15 @@ class Groceries extends React.Component{
               }
               </div>
             </div>
-            <div className={`${classes.billsAndProducts} ${classes.management}`}>
-              <Link to="/administracion-de-productos" className={classes.link}>ADMINISTRACION</Link>
+            <div className={classes.management}>
+              <Paper className={classes.managementLink}>
+                <Link to="/administracion-de-productos" className={classes.link}>ADMINISTRACION</Link>
+              </Paper>
               <div className={classes.dataBlocks}>
-                {(groceries.managementItems.length && Object.keys(groceries.lineChartData).length) &&
+                {(groceries.managementItems.length && Object.keys(groceries.lineChartData).length)?
                   Object.keys(generalData).map((key, i) =>
                     this.getGeneralData(generalData[key], i, classes)
-                  )
+                  ) : ''
                 }
               </div>
             </div>
